@@ -7,11 +7,3 @@ node_modules/
 .sass-cache/
 
 _site/
-
-*.log
-
-# Hexo
-Thumbs.db
-db.json
-public/
-.deploy*/
