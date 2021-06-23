@@ -13,6 +13,8 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve('./structure/modularized/src/shared'),
+        '@petals': resolve('./external/petals'),
+        '@kokiri': resolve('./external/kokiri'),
       },
     },
   },
@@ -30,6 +32,7 @@ module.exports = {
         sassOptions: {
           fiber: require('fibers'),
         },
+        additionalData: `@import "~@kokiri/themes/antd/helper";`,
       },
     },
   },

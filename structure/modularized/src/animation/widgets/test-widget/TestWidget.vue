@@ -1,5 +1,5 @@
 <template>
-  <div class="TestWidget">来自动画模块的部件 <ol-button /></div>
+  <div class="TestWidget">来自动画模块的部件 <ol-button>基础组件里的按钮</ol-button></div>
 </template>
 
 <script lang="ts">
