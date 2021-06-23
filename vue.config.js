@@ -10,6 +10,11 @@ module.exports = {
     entry: {
       app: './structure/modularized/src/main.ts',
     },
+    resolve: {
+      alias: {
+        '@': resolve('./structure/modularized/src/shared'),
+      },
+    },
   },
   chainWebpack: config => {
     config.plugin('html').tap(args => {

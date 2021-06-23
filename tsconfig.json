@@ -12,7 +12,10 @@
     "experimentalDecorators": true,
     "sourceMap": false,
     "noImplicitAny": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["structure/modularized/src/shared/*"]
+    }
   },
   "include": ["structure/modularized/src"]
 }
