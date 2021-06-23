@@ -1,14 +1,16 @@
 <template>
-  <div>Comic list view, {{ testUtil() }}</div>
+  <div>Comic list view, {{ testUtil() }}<test-widget /></div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { getDependencies } from '@/utils/module';
+import { getDependencies, getComponents } from '@/utils/module';
 
-@Component
+@Component({
+  components: getComponents('comic'),
+})
 export default class ComicList extends Vue {
-  private readonly testUtil = getDependencies('comic').animation.utils.test;
+  private readonly testUtil = (getDependencies('comic', 'animation.utils') as any).test;
 }
 </script>

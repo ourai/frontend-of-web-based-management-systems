@@ -1,6 +1,7 @@
 import Vue, { CreateElement, VNode } from 'vue';
 import VueRouter from 'vue-router';
 
+import '@/components';
 import { routes } from './entry';
 import App from './App.vue';
 

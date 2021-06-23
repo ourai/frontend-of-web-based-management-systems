@@ -1,9 +1,12 @@
+type ModuleResourceType = 'services' | 'utils' | 'widgets';
+
+type ModuleComponentIdentifier = boolean | string;
+
 type ModuleDescriptor = {
   name: string;
   imports?: string[];
-  exports?: {
-    [key in 'services' | 'utils' | 'widgets']?: Record<string, any>;
-  };
+  exports?: Partial<Record<ModuleResourceType, Record<string, any>>>;
+  components?: Record<string, ModuleComponentIdentifier>;
 };
 
-export { ModuleDescriptor };
+export { ModuleResourceType, ModuleComponentIdentifier, ModuleDescriptor };
