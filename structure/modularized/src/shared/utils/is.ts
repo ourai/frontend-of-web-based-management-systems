@@ -1,1 +1,1 @@
-export { isBoolean, isString } from '@ntks/toolbox';
+export { isBoolean, isString, isFunction } from '@ntks/toolbox';

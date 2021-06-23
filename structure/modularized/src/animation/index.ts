@@ -1,10 +1,10 @@
 import { ModuleDescriptor } from '@/types';
 
-import { testUtil } from './helper';
+import { MODULE_NAME, testUtil } from './helper';
 import TestWidget from './widgets/test-widget';
 
 export default {
-  name: 'animation',
+  name: MODULE_NAME,
   exports: {
     utils: { test: testUtil },
     widgets: { test: TestWidget },

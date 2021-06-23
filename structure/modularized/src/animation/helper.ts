@@ -1,5 +1,7 @@
+const MODULE_NAME = 'animation';
+
 function testUtil(): string {
   return 'You are great!';
 }
 
-export { testUtil };
+export { MODULE_NAME, testUtil };

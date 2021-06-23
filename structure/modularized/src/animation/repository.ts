@@ -1,0 +1,3 @@
+class AnimationRepository {}
+
+export { AnimationRepository };

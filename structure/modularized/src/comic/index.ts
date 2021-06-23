@@ -1,6 +1,8 @@
 import { ModuleDescriptor } from '@/types';
 
+import { MODULE_NAME } from './helper';
+
 export default {
-  name: 'comic',
+  name: MODULE_NAME,
   imports: ['animation.utils.test', 'animation.widgets.test'],
 } as ModuleDescriptor;
