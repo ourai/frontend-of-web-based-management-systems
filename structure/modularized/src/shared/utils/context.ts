@@ -1,6 +1,9 @@
+import { VueConstructor } from 'vue';
+
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
 
 import { isFunction } from './is';
+import { ModuleDependencies, ModuleResources, getDependencies, getComponents } from './module';
 
 type RepositoryExecutor<ActionName = any> = {
   (actionName: ActionName, success?: ResponseSuccess, fail?: ResponseFail): Promise<ResponseResult>;
@@ -10,6 +13,12 @@ type RepositoryExecutor<ActionName = any> = {
     success?: ResponseSuccess,
     fail?: ResponseFail,
   ): Promise<ResponseResult>;
+};
+
+type ModuleContext<Repository> = {
+  execute: RepositoryExecutor<keyof Repository>;
+  getDependencies: (refPath?: string) => ModuleDependencies | ModuleResources | undefined;
+  getComponents: () => Record<string, VueConstructor>;
 };
 
 function noop() {} // eslint-disable-line @typescript-eslint/no-empty-function
@@ -61,4 +70,17 @@ function createRepositoryExecutor<Repository>(
   };
 }
 
-export { createRepositoryExecutor };
+function createModuleContext<Repository>(
+  moduleName: string,
+  repository: Repository,
+): ModuleContext<Repository> {
+  const components = getComponents(moduleName);
+
+  return {
+    execute: createRepositoryExecutor(repository),
+    getDependencies: getDependencies.bind(null, moduleName),
+    getComponents: () => components,
+  };
+}
+
+export { createModuleContext };

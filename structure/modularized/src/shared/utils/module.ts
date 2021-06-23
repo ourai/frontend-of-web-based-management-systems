@@ -6,6 +6,7 @@ import { getComponent } from './component';
 
 type ResolvedModule = Required<Omit<ModuleDescriptor, 'name'>> & {
   dependencies: Record<string, any>;
+  registered: boolean;
 };
 
 type ModuleResources = Partial<Record<ModuleResourceType, any>>;
@@ -14,13 +15,25 @@ type ModuleDependencies = Record<string, ModuleResources>;
 
 const moduleMap = new Map<string, ResolvedModule>();
 
+function ensureModuleExists(name: string): void {
+  if (!moduleMap.has(name)) {
+    moduleMap.set(name, {
+      imports: [],
+      exports: {},
+      components: {},
+      dependencies: {},
+      registered: false,
+    });
+  }
+}
+
 function registerModule({
   name,
   imports = [],
   exports = {},
   components = {},
 }: ModuleDescriptor): void {
-  moduleMap.set(name, { imports, exports, components, dependencies: {} });
+  moduleMap.set(name, { imports, exports, components, dependencies: {}, registered: true });
 }
 
 function getDependencyByRef(ref: string) {
@@ -93,12 +106,9 @@ function getDependencies(
 }
 
 function getComponents(moduleName: string): Record<string, VueConstructor> {
-  const module = moduleMap.get(moduleName);
+  ensureModuleExists(moduleName);
 
-  if (!module) {
-    return {};
-  }
-
+  const module = moduleMap.get(moduleName)!;
   const identifiers = module.components;
 
   let dependencies: ModuleDependencies;
@@ -127,4 +137,4 @@ function getComponents(moduleName: string): Record<string, VueConstructor> {
   }, {});
 }
 
-export { registerModules, getDependencies, getComponents };
+export { ModuleDependencies, ModuleResources, registerModules, getDependencies, getComponents };

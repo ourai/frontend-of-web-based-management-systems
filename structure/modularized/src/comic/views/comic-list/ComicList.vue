@@ -5,12 +5,12 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { getDependencies, getComponents } from '@/utils/module';
+import context from '../../context';
 
 @Component({
-  components: getComponents('comic'),
+  components: context.getComponents(),
 })
 export default class ComicList extends Vue {
-  private readonly testUtil = (getDependencies('comic', 'animation.utils') as any).test;
+  private readonly testUtil = (context.getDependencies('animation.utils') as any).test;
 }
 </script>

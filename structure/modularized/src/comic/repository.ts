@@ -1,0 +1,3 @@
+class ComicRepository {}
+
+export { ComicRepository };

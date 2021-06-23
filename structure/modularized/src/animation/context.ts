@@ -1,12 +1,6 @@
-import { getComponent } from '@/utils/component';
-import { createRepositoryExecutor } from '@/utils/context';
+import { createModuleContext } from '@/utils/context';
 
+import { MODULE_NAME } from './helper';
 import { AnimationRepository } from './repository';
 
-const components = {
-  OlButton: getComponent('OlButton')!,
-};
-
-const execute = createRepositoryExecutor(new AnimationRepository());
-
-export { components, execute };
+export default createModuleContext(MODULE_NAME, new AnimationRepository());
