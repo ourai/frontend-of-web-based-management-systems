@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "vue-cli-service build",
-    "serve": "vue-cli-service serve"
+    "start": "vue-cli-service serve"
   },
   "author": "Ourai Lin <ourairyu@gmail.com> (https://ourai.ws/)",
   "license": "MIT",

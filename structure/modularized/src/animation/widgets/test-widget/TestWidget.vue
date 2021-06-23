@@ -1,15 +1,13 @@
 <template>
-  <div class="TestWidget">来自动画模块的部件 <el-button /></div>
+  <div class="TestWidget">来自动画模块的部件 <ol-button /></div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { getComponent } from '@/utils/component';
+import { components } from '../../context';
 
-@Component({
-  components: { ElButton: getComponent('OlButton')! },
-})
+@Component({ components })
 export default class TestWidget extends Vue {}
 </script>
 
