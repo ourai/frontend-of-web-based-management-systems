@@ -43,7 +43,7 @@ function registerModule({
     exports,
     dependencies: {},
     componentRefs: components,
-    components: ensureModuleExists(name).components,
+    components: ensureModuleExists(name).components, // 必须保证 `components` 这个属性的引用地址不变，否则在模块未注册时在部件和页面中使用会找不到依赖组件
   });
 }
 

@@ -1,7 +1,8 @@
 import Vue, { CreateElement, VNode } from 'vue';
 import VueRouter from 'vue-router';
 
-import '@/components';
+import './shared/components';
+import './domain';
 import { routes } from './entry';
 import App from './App.vue';
 
@@ -17,4 +18,5 @@ new Vue({
     mode: 'history',
     routes,
   }),
+  provide: { routes },
 });

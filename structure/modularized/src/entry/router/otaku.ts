@@ -1,9 +1,10 @@
-import { RouteConfig } from 'vue-router';
+import { RouteConfig } from '@/types';
 
-import AnimationList from '../../animation/views/animation-list/AnimationList.vue';
-import ComicList from '../../comic/views/comic-list/ComicList.vue';
-import GameList from '../../game/views/game-list/GameList.vue';
-import NovelList from '../../novel/views/novel-list/NovelList.vue';
+import { AnimationList, AnimationForm } from '../../domain/animation/views';
+import { ComicList } from '../../domain/comic/views';
+import { GameList } from '../../domain/game/views';
+import { NovelList } from '../../domain/novel/views';
+
 import AdminLayout from '../layouts/AdminLayout.vue';
 
 export default {
@@ -12,7 +13,9 @@ export default {
   component: AdminLayout,
   redirect: '/otaku/animations',
   children: [
-    { name: 'animation', path: 'animations', component: AnimationList },
+    { name: 'animationList', path: 'animations', component: AnimationList },
+    { name: 'animationNewForm', path: 'animations/new', component: AnimationForm },
+    { name: 'animationEditForm', path: 'animations/:id/edit', component: AnimationForm },
     { name: 'comic', path: 'comics', component: ComicList },
     { name: 'game', path: 'games', component: GameList },
     { name: 'novel', path: 'novels', component: NovelList },

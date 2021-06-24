@@ -1,4 +1,4 @@
-import { RouteConfig } from 'vue-router';
+import { RouteConfig } from '@/types';
 
 import otaku from './otaku';
 
