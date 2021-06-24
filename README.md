@@ -10,9 +10,9 @@
 ## 包含功能
 
 - 目录结构划分
-  - 「野生」模式（[`structure/wild`](structure/wild) 文件夹）
-  - 「分层」模式（[`structure/layered`](structure/layered) 文件夹）
-  - 「模块化」模式（[`structure/modularized`](structure/modularized) 文件夹），此模式为本仓库所使用模式
+  - 「[野生](structure/wild)」模式
+  - 「[分层](structure/layered)」模式
+  - 「[模块化](structure/modularized)」模式（本仓库所使用模式）
 - 模块系统
   - 模块注册与查找
   - 组件动态引用

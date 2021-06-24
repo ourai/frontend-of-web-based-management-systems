@@ -1,4 +1,5 @@
-const { join: joinPath } = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
+const { join: joinPath, resolve: resolvePath } = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
+const mock = require('mocker-api'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 function resolve(dir) {
   return joinPath(__dirname, dir);
@@ -38,5 +39,6 @@ module.exports = {
   },
   devServer: {
     disableHostCheck: true,
+    before: app => mock(app, resolvePath('./mock/index.js')),
   },
 };
