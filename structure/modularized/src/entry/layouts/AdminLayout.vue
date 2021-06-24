@@ -2,7 +2,7 @@
   <app-container class="AdminLayout">
     <layout-container>
       <layout-aside class="AdminLayout-sidebar">
-        <router-link class="AdminLayout-brand" :to="{ name: 'root' }">Example App</router-link>
+        <router-link class="AdminLayout-brand" :to="{ name: 'root' }">中后台前端应用</router-link>
         <ul class="AdminLayout-menu">
           <li
             :class="{ 'is-active': nav.name === currentSubNav }"
