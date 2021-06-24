@@ -5,6 +5,12 @@ import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '..
 import { isFunction } from './is';
 import { ModuleDependencies, ModuleResources, getDependencies, getComponents } from './module';
 
+type ShorthandRequest<ParamsType = RequestParams> = (
+  params: ParamsType,
+  success?: ResponseSuccess,
+  fail?: ResponseFail,
+) => Promise<ResponseResult>;
+
 type RepositoryExecutor<ActionName = any> = {
   (actionName: ActionName, success?: ResponseSuccess, fail?: ResponseFail): Promise<ResponseResult>;
   (
@@ -23,13 +29,30 @@ type ModuleContext<Repository> = {
 };
 
 type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
+  attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
 };
 
-type ListViewContext<Repository> = ViewContext<Repository>;
+type ListViewContextOptions = {
+  getList: string;
+  deleteOne?: string;
+  deleteList?: string;
+};
 
-type ObjectViewContext<Repository> = ViewContext<Repository>;
+type ListViewContext<Repository> = ViewContext<Repository> & {
+  getList: ShorthandRequest;
+  deleteOne: ShorthandRequest<string | Record<string, any>>;
+  deleteList: ShorthandRequest<string[] | Record<string, any>>;
+};
+
+type ObjectViewContextOptions = {
+  insert?: string;
+  update?: string;
+};
+
+type ObjectViewContext<Repository> = ViewContext<Repository> &
+  Record<'insert' | 'update', ShorthandRequest>;
 
 function noop() {} // eslint-disable-line @typescript-eslint/no-empty-function
 
@@ -93,12 +116,15 @@ function createModuleContext<Repository>(
 }
 
 function callVuexMethodWithNamespace(
-  vm: Vue | undefined,
+  vmGetter: () => Vue | undefined,
   namespace: string,
   methodName: 'commit' | 'dispatch',
   type: string,
   payload?: any,
 ): void {
+  const vm = vmGetter();
+  console.log(methodName, vm, namespace, type, payload);
+
   if (!vm || !(vm as any).$store) {
     return;
   }
@@ -108,12 +134,18 @@ function callVuexMethodWithNamespace(
 
 function createViewContext<Repository>(
   moduleContext: ModuleContext<Repository>,
-  vm?: Vue,
 ): ViewContext<Repository> {
-  const callVuexMethod = callVuexMethodWithNamespace.bind(null, vm, moduleContext.getModuleName());
+  let _vm: Vue | undefined;
+
+  const callVuexMethod = callVuexMethodWithNamespace.bind(
+    null,
+    () => _vm,
+    moduleContext.getModuleName(),
+  );
 
   return {
     execute: moduleContext.execute,
+    attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
   };
@@ -121,20 +153,62 @@ function createViewContext<Repository>(
 
 function createViewContextFactory<Repository>(
   moduleContext: ModuleContext<Repository>,
-): (vm?: Vue) => ViewContext<Repository> {
-  return (vm?: Vue) => createViewContext(moduleContext, vm);
+): () => ViewContext<Repository> {
+  return () => createViewContext(moduleContext);
+}
+
+function resolvePartialContext<
+  Repository,
+  ViewContextOptions,
+  SpecificViewContext,
+  SpecificActionName extends keyof SpecificViewContext
+>(
+  executor: RepositoryExecutor<keyof Repository>,
+  options: ViewContextOptions,
+  actionNames: SpecificActionName[],
+) {
+  const actionMap = {} as Pick<SpecificViewContext, SpecificActionName>;
+  const otherOptions = {} as Omit<ViewContextOptions, SpecificActionName>;
+
+  Object.keys(options).forEach(key => {
+    const val = options[key];
+
+    if (actionNames.some(name => name === key)) {
+      actionMap[key] = executor.bind(null, val as any);
+    } else {
+      otherOptions[key] = val;
+    }
+  });
+
+  return { ...actionMap, ...otherOptions };
 }
 
 function createListViewContextFactory<Repository>(
   moduleContext: ModuleContext<Repository>,
-): (options, vm?: Vue) => ListViewContext<Repository> {
-  return (options, vm?: Vue) => ({ ...createViewContext(moduleContext, vm) });
+): (options: ListViewContextOptions) => ListViewContext<Repository> {
+  return (options: ListViewContextOptions) => ({
+    ...resolvePartialContext<
+      Repository,
+      ListViewContextOptions,
+      ListViewContext<Repository>,
+      'getList' | 'deleteOne' | 'deleteList'
+    >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
+    ...createViewContext(moduleContext),
+  });
 }
 
 function createObjectViewContextFactory<Repository>(
   moduleContext: ModuleContext<Repository>,
-): (options, vm?: Vue) => ObjectViewContext<Repository> {
-  return (options, vm?: Vue) => ({ ...createViewContext(moduleContext, vm) });
+): (options: ObjectViewContextOptions) => ObjectViewContext<Repository> {
+  return (options: ObjectViewContextOptions) => ({
+    ...resolvePartialContext<
+      Repository,
+      ObjectViewContextOptions,
+      ObjectViewContext<Repository>,
+      'insert' | 'update'
+    >(moduleContext.execute, options, ['insert', 'update']),
+    ...createViewContext(moduleContext),
+  });
 }
 
 export {

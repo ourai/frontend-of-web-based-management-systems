@@ -17,20 +17,14 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 import { AnimationEntity } from '../../typing';
-import { createListViewContext } from '../../context';
+import context from './context';
 
 @Component
 export default class AnimationList extends Vue {
-  private readonly context = createListViewContext({}, this);
-
   private dataSource: AnimationEntity[] = [];
 
   private created(): void {
-    this.context.execute('getAllAnimationList').then(res => {
-      if (res.success) {
-        this.dataSource = res.data;
-      }
-    });
+    context.getList({}, data => (this.dataSource = data));
   }
 }
 </script>
