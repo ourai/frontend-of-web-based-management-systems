@@ -74,12 +74,10 @@ function createModuleContext<Repository>(
   moduleName: string,
   repository: Repository,
 ): ModuleContext<Repository> {
-  const components = getComponents(moduleName);
-
   return {
     execute: createRepositoryExecutor(repository),
     getDependencies: getDependencies.bind(null, moduleName),
-    getComponents: () => components,
+    getComponents: getComponents.bind(null, moduleName),
   };
 }
 

@@ -8,6 +8,6 @@ export default {
   exports: {
     utils: { test: testUtil },
     widgets: { test: TestWidget },
-    components: { OlButton: true },
   },
+  components: { OlButton: true },
 } as ModuleDescriptor;

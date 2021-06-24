@@ -1,12 +1,15 @@
 import { VueConstructor } from 'vue';
 
-import { ModuleResourceType, ModuleDescriptor } from '../types';
+import { ModuleResourceType, ModuleComponentRefs, ModuleDescriptor } from '../types';
 import { isBoolean, isString } from './is';
 import { getComponent } from './component';
 
-type ResolvedModule = Required<Omit<ModuleDescriptor, 'name'>> & {
+type ModuleComponents = Record<string, VueConstructor>;
+
+type ResolvedModule = Required<Omit<ModuleDescriptor, 'name' | 'components'>> & {
   dependencies: Record<string, any>;
-  registered: boolean;
+  componentRefs: ModuleComponentRefs;
+  components: ModuleComponents;
 };
 
 type ModuleResources = Partial<Record<ModuleResourceType, any>>;
@@ -15,16 +18,18 @@ type ModuleDependencies = Record<string, ModuleResources>;
 
 const moduleMap = new Map<string, ResolvedModule>();
 
-function ensureModuleExists(name: string): void {
+function ensureModuleExists(name: string): ResolvedModule {
   if (!moduleMap.has(name)) {
     moduleMap.set(name, {
       imports: [],
       exports: {},
-      components: {},
       dependencies: {},
-      registered: false,
+      componentRefs: {},
+      components: {},
     });
   }
+
+  return moduleMap.get(name)!;
 }
 
 function registerModule({
@@ -33,24 +38,25 @@ function registerModule({
   exports = {},
   components = {},
 }: ModuleDescriptor): void {
-  moduleMap.set(name, { imports, exports, components, dependencies: {}, registered: true });
+  moduleMap.set(name, {
+    imports,
+    exports,
+    dependencies: {},
+    componentRefs: components,
+    components: ensureModuleExists(name).components,
+  });
 }
 
 function getDependencyByRef(ref: string) {
   const [moduleName, resourceType, resourceName] = ref.split('.');
-
-  const module = moduleMap.get(moduleName);
-
-  if (!module) {
-    return;
-  }
+  const module = ensureModuleExists(moduleName);
 
   return module.exports[resourceType] && module.exports[resourceType][resourceName];
 }
 
 function resolveDependencies(): void {
-  moduleMap.forEach((module, moduleName) =>
-    moduleMap.set(moduleName, {
+  moduleMap.forEach((module, name) =>
+    moduleMap.set(name, {
       ...module,
       dependencies: module.imports.reduce(
         (prev, ref) => ({ ...prev, [ref]: getDependencyByRef(ref) }),
@@ -60,21 +66,11 @@ function resolveDependencies(): void {
   );
 }
 
-function registerModules(descriptors: ModuleDescriptor[]): void {
-  descriptors.forEach(registerModule);
-  resolveDependencies();
-}
-
 function getDependencies(
   moduleName: string,
   refPath?: string,
 ): ModuleDependencies | ModuleResources | undefined {
-  const module = moduleMap.get(moduleName);
-
-  if (!module) {
-    return;
-  }
-
+  const module = ensureModuleExists(moduleName);
   const dependencies: ModuleDependencies = {};
 
   module.imports.forEach(ref => {
@@ -105,36 +101,47 @@ function getDependencies(
   return refResourceType ? dependency[refResourceType] : (dependency as ModuleResources);
 }
 
-function getComponents(moduleName: string): Record<string, VueConstructor> {
-  ensureModuleExists(moduleName);
+function resolveComponents(): void {
+  moduleMap.forEach((module, name) => {
+    const refs = module.componentRefs;
 
-  const module = moduleMap.get(moduleName)!;
-  const identifiers = module.components;
+    let dependencies: ModuleDependencies;
 
-  let dependencies: ModuleDependencies;
+    Object.keys(refs).forEach(id => {
+      const ref = refs[id];
+      const useIdDirectly = isBoolean(ref);
+      const refParts = isString(ref) ? (ref as string).split('.') : [];
 
-  return Object.keys(identifiers).reduce((prev, id) => {
-    const ref = identifiers[id];
-    const useIdDirectly = isBoolean(ref);
-    const refParts = isString(ref) ? (ref as string).split('.') : [];
+      let resolvedComponent: VueConstructor | undefined;
 
-    let resolvedComponent: VueConstructor | undefined;
+      if (useIdDirectly || refParts.length === 1) {
+        resolvedComponent = getComponent(useIdDirectly ? id : (ref as string));
+      } else if (refParts.length === 3) {
+        if (!dependencies) {
+          dependencies = getDependencies(name) as ModuleDependencies;
+        }
 
-    if (useIdDirectly || refParts.length === 1) {
-      resolvedComponent = getComponent(useIdDirectly ? id : (ref as string));
-    } else if (refParts.length === 3) {
-      if (!dependencies) {
-        dependencies = getDependencies(moduleName) as ModuleDependencies;
+        const [refModule, _, widgetName] = refParts;
+        const { widgets } = dependencies[refModule];
+
+        resolvedComponent = widgets && widgets[widgetName];
       }
 
-      const [refModule, _, widgetName] = refParts;
-      const { widgets } = dependencies[refModule];
+      if (resolvedComponent) {
+        module.components[id] = resolvedComponent;
+      }
+    });
+  });
+}
 
-      resolvedComponent = widgets && widgets[widgetName];
-    }
+function registerModules(descriptors: ModuleDescriptor[]): void {
+  descriptors.forEach(registerModule);
+  resolveDependencies();
+  resolveComponents();
+}
 
-    return resolvedComponent ? { ...prev, [id]: resolvedComponent } : prev;
-  }, {});
+function getComponents(moduleName: string): ModuleComponents {
+  return ensureModuleExists(moduleName).components;
 }
 
 export { ModuleDependencies, ModuleResources, registerModules, getDependencies, getComponents };
