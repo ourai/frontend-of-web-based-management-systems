@@ -39,6 +39,6 @@ module.exports = {
   },
   devServer: {
     disableHostCheck: true,
-    before: app => mock(app, resolvePath('./mock/index.js')),
+    before: app => mock(app, resolvePath('./build/mock/index.js')),
   },
 };
