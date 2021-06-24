@@ -1,3 +1,5 @@
 class ComicRepository {}
 
-export { ComicRepository };
+const repo = new ComicRepository();
+
+export { ComicRepository, repo as default };

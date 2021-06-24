@@ -28,7 +28,7 @@
             </ul>
           </nav>
         </layout-header>
-        <layout-main>
+        <layout-main class="AdminLayout-main">
           <router-view />
         </layout-main>
       </layout-container>

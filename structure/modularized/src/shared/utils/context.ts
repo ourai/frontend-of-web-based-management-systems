@@ -1,4 +1,4 @@
-import { VueConstructor } from 'vue';
+import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
 
@@ -16,10 +16,20 @@ type RepositoryExecutor<ActionName = any> = {
 };
 
 type ModuleContext<Repository> = {
-  execute: RepositoryExecutor<keyof Repository>;
+  getModuleName: () => string;
   getDependencies: (refPath?: string) => ModuleDependencies | ModuleResources | undefined;
   getComponents: () => Record<string, VueConstructor>;
+  execute: RepositoryExecutor<keyof Repository>;
 };
+
+type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
+  commit: (type: string, payload?: any) => void;
+  dispatch: (type: string, payload?: any) => Promise<void>;
+};
+
+type ListViewContext<Repository> = ViewContext<Repository>;
+
+type ObjectViewContext<Repository> = ViewContext<Repository>;
 
 function noop() {} // eslint-disable-line @typescript-eslint/no-empty-function
 
@@ -75,10 +85,61 @@ function createModuleContext<Repository>(
   repository: Repository,
 ): ModuleContext<Repository> {
   return {
-    execute: createRepositoryExecutor(repository),
+    getModuleName: () => moduleName,
     getDependencies: getDependencies.bind(null, moduleName),
     getComponents: getComponents.bind(null, moduleName),
+    execute: createRepositoryExecutor(repository),
   };
 }
 
-export { createModuleContext };
+function callVuexMethodWithNamespace(
+  vm: Vue | undefined,
+  namespace: string,
+  methodName: 'commit' | 'dispatch',
+  type: string,
+  payload?: any,
+): void {
+  if (!vm || !(vm as any).$store) {
+    return;
+  }
+
+  (vm as any).$store[methodName](`${namespace}/${type}`, payload);
+}
+
+function createViewContext<Repository>(
+  moduleContext: ModuleContext<Repository>,
+  vm?: Vue,
+): ViewContext<Repository> {
+  const callVuexMethod = callVuexMethodWithNamespace.bind(null, vm, moduleContext.getModuleName());
+
+  return {
+    execute: moduleContext.execute,
+    commit: callVuexMethod.bind(null, 'commit'),
+    dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
+  };
+}
+
+function createViewContextFactory<Repository>(
+  moduleContext: ModuleContext<Repository>,
+): (vm?: Vue) => ViewContext<Repository> {
+  return (vm?: Vue) => createViewContext(moduleContext, vm);
+}
+
+function createListViewContextFactory<Repository>(
+  moduleContext: ModuleContext<Repository>,
+): (options, vm?: Vue) => ListViewContext<Repository> {
+  return (options, vm?: Vue) => ({ ...createViewContext(moduleContext, vm) });
+}
+
+function createObjectViewContextFactory<Repository>(
+  moduleContext: ModuleContext<Repository>,
+): (options, vm?: Vue) => ObjectViewContext<Repository> {
+  return (options, vm?: Vue) => ({ ...createViewContext(moduleContext, vm) });
+}
+
+export {
+  createModuleContext,
+  createViewContextFactory,
+  createListViewContextFactory,
+  createObjectViewContextFactory,
+};

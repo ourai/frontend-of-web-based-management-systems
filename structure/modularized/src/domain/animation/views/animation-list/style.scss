@@ -1,4 +1,9 @@
-.AnimationList {
-  color: #fff;
-  background-color: #0871ab;
+.AnimationItem {
+  p {
+    margin-top: 6px;
+  }
+}
+
+.AnimationItem + .AnimationItem {
+  margin-top: 24px;
 }

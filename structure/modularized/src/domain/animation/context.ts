@@ -1,6 +1,14 @@
-import { createModuleContext } from '@/utils/context';
+import {
+  createModuleContext,
+  createListViewContextFactory,
+  createObjectViewContextFactory,
+} from '@/utils/context';
 
 import { MODULE_NAME } from './helper';
-import { AnimationRepository } from './repository';
+import repo from './repository';
 
-export default createModuleContext(MODULE_NAME, new AnimationRepository());
+const moduleContext = createModuleContext(MODULE_NAME, repo);
+const createListViewContext = createListViewContextFactory(moduleContext);
+const createObjectViewContext = createObjectViewContextFactory(moduleContext);
+
+export { createListViewContext, createObjectViewContext, moduleContext as default };

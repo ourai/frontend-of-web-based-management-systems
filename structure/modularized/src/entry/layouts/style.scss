@@ -31,6 +31,11 @@
   &-mainNav {
     height: 100%;
   }
+
+  &-main {
+    overflow: auto;
+    height: calc(100% - 48px);
+  }
 }
 
 .MainNav {
