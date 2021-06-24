@@ -4,14 +4,22 @@ import { Component, Prop, Watch, Emit } from 'vue-property-decorator';
 import { Menu as ElMenu } from 'element-ui';
 import { MenuDisplayMode } from 'element-ui/types/menu';
 
-import { MenuDirection, SubMenuTrigger, INavMenuComponent, NavMenuHeadlessComponent } from '@petals/nav-menu';
+import {
+  MenuDirection,
+  SubMenuTrigger,
+  INavMenuComponent,
+  NavMenuHeadlessComponent,
+} from '@petals/nav-menu';
 
 import { BaseStructuralComponent } from '../basic';
 
 @Component({
   name: 'BudsMenu',
 })
-export default class Menu extends BaseStructuralComponent<NavMenuHeadlessComponent> implements INavMenuComponent {
+export default class Menu
+  extends BaseStructuralComponent<NavMenuHeadlessComponent>
+  implements INavMenuComponent
+{
   @Prop({ type: String, default: 'vertical' })
   public readonly direction!: MenuDirection;
 

@@ -1,5 +1,5 @@
 import { RouteConfig } from 'vue-router';
 
-import wiki from './wiki';
+import otaku from './otaku';
 
-export default [{ name: 'root', path: '/', redirect: '/wiki' }, wiki] as RouteConfig[];
+export default [{ name: 'root', path: '/', redirect: '/otaku' }, otaku] as RouteConfig[];

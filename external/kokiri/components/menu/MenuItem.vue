@@ -21,7 +21,10 @@ type LinkHref = string;
     ElMenuItem,
   },
 })
-export default class MenuItem extends BaseStructuralComponent<NavMenuItemHeadlessComponent> implements INavMenuItemComponent<LinkHref> {
+export default class MenuItem
+  extends BaseStructuralComponent<NavMenuItemHeadlessComponent>
+  implements INavMenuItemComponent<LinkHref>
+{
   @Prop({ type: String, default: '' })
   public readonly flag!: string;
 

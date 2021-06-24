@@ -10,7 +10,10 @@ import { BaseStructuralComponent } from '../basic';
 @Component({
   name: 'BudsMenuItemGroup',
 })
-export default class MenuItemGroup extends BaseStructuralComponent<NavMenuItemGroupHeadlessComponent> implements INavMenuItemGroupComponent {
+export default class MenuItemGroup
+  extends BaseStructuralComponent<NavMenuItemGroupHeadlessComponent>
+  implements INavMenuItemGroupComponent
+{
   @Prop({ type: String, default: '' })
   public readonly title!: string;
 

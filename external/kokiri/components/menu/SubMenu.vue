@@ -24,7 +24,10 @@ import { BaseStructuralComponent } from '../basic';
     ElSubmenu,
   },
 })
-export default class SubMenu extends BaseStructuralComponent<NavSubMenuHeadlessComponent> implements INavSubMenuComponent {
+export default class SubMenu
+  extends BaseStructuralComponent<NavSubMenuHeadlessComponent>
+  implements INavSubMenuComponent
+{
   @Prop({ type: String, default: '' })
   public readonly flag!: string;
 
