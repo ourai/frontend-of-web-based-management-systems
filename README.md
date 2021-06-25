@@ -10,9 +10,9 @@
 ## 包含功能
 
 - 目录结构划分
-  - 「[野生](structure/wild)」模式
-  - 「[分层](structure/layered)」模式
-  - 「[模块化](structure/modularized)」模式（本仓库所使用模式）
+  - 「[野生](app/structure/wild)」模式
+  - 「[分层](app/structure/layered)」模式
+  - 「[模块化](app/structure/modularized)」模式（本仓库所使用模式）
 - 模块系统
   - 模块注册与查找
   - 组件动态引用
@@ -20,10 +20,10 @@
   - 模块上下文
   - 视图上下文
 - 路由配置
-  - 生成导航菜单
+  - 导航菜单生成
   - _TODO: 访问权限控制_
 - HTTP 请求
-  - 统一响应返回结构
+  - 响应返回结构统一
 
 ## 本地预览
 

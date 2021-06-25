@@ -5,15 +5,17 @@ function resolve(dir) {
   return joinPath(__dirname, dir);
 }
 
+const APP_SRC = './app/structure/modularized/src';
+
 module.exports = {
   publicPath: '/',
   configureWebpack: {
     entry: {
-      app: './structure/modularized/src/main.ts',
+      app: `${APP_SRC}/main.ts`,
     },
     resolve: {
       alias: {
-        '@': resolve('./structure/modularized/src/shared'),
+        '@': resolve(`${APP_SRC}/shared`),
         '@petals': resolve('./external/petals'),
         '@kokiri': resolve('./external/kokiri'),
       },
@@ -21,7 +23,7 @@ module.exports = {
   },
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      args[0].template = resolve('./build/public/index.html');
+      args[0].template = resolve('./app/public/index.html');
 
       return args;
     });
@@ -39,6 +41,6 @@ module.exports = {
   },
   devServer: {
     disableHostCheck: true,
-    before: app => mock(app, resolvePath('./build/mock/index.js')),
+    before: app => mock(app, resolvePath('./app/mock/index.js')),
   },
 };

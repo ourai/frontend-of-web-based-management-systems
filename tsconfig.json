@@ -14,10 +14,10 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["structure/modularized/src/shared/*"],
+      "@/*": ["app/structure/modularized/src/shared/*"],
       "@petals/*": ["external/petals/*"],
       "@kokiri/*": ["external/kokiri/*"]
     }
   },
-  "include": ["structure/modularized/src", "external"]
+  "include": ["app/structure/modularized/src", "external"]
 }
