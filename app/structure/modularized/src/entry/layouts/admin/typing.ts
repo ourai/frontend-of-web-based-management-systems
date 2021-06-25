@@ -1,3 +1,5 @@
+type RouteAccessible = Record<string, boolean>;
+
 type NavMenu = {
   name: string;
   text: string;
@@ -5,4 +7,4 @@ type NavMenu = {
   children?: NavMenu[];
 };
 
-export { NavMenu };
+export { RouteAccessible, NavMenu };

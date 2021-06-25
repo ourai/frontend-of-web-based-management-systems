@@ -1,11 +1,8 @@
-import { RouteConfig } from '@/types';
+import { RouteConfig, RouteRecord } from '@/types';
 
-import { NavMenu } from './typing';
+import { RouteAccessible, NavMenu } from './typing';
 
-function resolveAvailableNavs(
-  accessible: Record<string, boolean>,
-  routes: RouteConfig[],
-): NavMenu[] {
+function resolveAvailableNavs(routes: RouteConfig[], accessible: RouteAccessible): NavMenu[] {
   const resolved: NavMenu[] = [];
 
   routes.forEach(({ name = '', meta = {}, children }) => {
@@ -16,7 +13,7 @@ function resolveAvailableNavs(
     const nav: NavMenu = { name, text: meta.text || '', icon: meta.icon };
 
     if (children && children.length > 0) {
-      nav.children = resolveAvailableNavs(accessible, children);
+      nav.children = resolveAvailableNavs(children, accessible);
 
       if (nav.children.length === 0) {
         return;
@@ -29,4 +26,13 @@ function resolveAvailableNavs(
   return resolved;
 }
 
-export { resolveAvailableNavs };
+function canAccessCurrentRoute(
+  matched: RouteRecord[],
+  accessible: RouteAccessible | null,
+): boolean {
+  return accessible
+    ? matched.every(record => !record.meta.auth || accessible[record.meta.auth])
+    : false;
+}
+
+export { resolveAvailableNavs, canAccessCurrentRoute };

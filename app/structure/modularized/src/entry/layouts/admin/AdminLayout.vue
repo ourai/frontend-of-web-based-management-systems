@@ -28,8 +28,9 @@
             </ul>
           </nav>
         </layout-header>
-        <layout-main class="AdminLayout-main">
-          <router-view />
+        <layout-main class="AdminLayout-main" v-if="routeAccessible">
+          <router-view v-if="accessible" />
+          <div v-else>无权访问</div>
         </layout-main>
       </layout-container>
     </layout-container>
@@ -49,7 +50,7 @@ import {
 import { RouteConfig } from '@/types';
 
 import { NavMenu } from './typing';
-import { resolveAvailableNavs } from './helper';
+import { resolveAvailableNavs, canAccessCurrentRoute } from './helper';
 
 @Component({
   components: {
@@ -81,9 +82,17 @@ export default class AdminLayout extends Vue {
     return (mainNav && mainNav.children) || [];
   }
 
+  private get routeAccessible() {
+    return this.$store.state.session.authority.accessible;
+  }
+
+  private get accessible() {
+    return canAccessCurrentRoute(this.$route.matched, this.routeAccessible);
+  }
+
   private created(): void {
     this.$store.dispatch('session/fetchCurrentUser', {
-      success: accessible => (this.availableNavs = resolveAvailableNavs(accessible, this.routes)),
+      success: accessible => (this.availableNavs = resolveAvailableNavs(this.routes, accessible)),
     });
   }
 }
