@@ -9,7 +9,7 @@
             :key="nav.name"
             v-for="nav in subNavs"
           >
-            <router-link :to="{ name: nav.name }">{{ nav | text }}</router-link>
+            <router-link :to="{ name: nav.name }">{{ nav.text }}</router-link>
           </li>
         </ul>
       </layout-aside>
@@ -21,9 +21,9 @@
                 class="MainNav-item"
                 :class="{ 'is-active': nav.name === currentMainNav }"
                 :key="nav.name"
-                v-for="nav in mainNavs"
+                v-for="nav in availableNavs"
               >
-                <router-link :to="{ name: nav.name }">{{ nav | text }}</router-link>
+                <router-link :to="{ name: nav.name }">{{ nav.text }}</router-link>
               </li>
             </ul>
           </nav>
@@ -48,9 +48,8 @@ import {
 
 import { RouteConfig } from '@/types';
 
-function isMenuShown({ meta }: RouteConfig): boolean {
-  return !meta || meta.show !== false;
-}
+import { NavMenu } from './typing';
+import { resolveAvailableNavs } from './helper';
 
 @Component({
   components: {
@@ -60,13 +59,12 @@ function isMenuShown({ meta }: RouteConfig): boolean {
     LayoutMain,
     LayoutAside,
   },
-  filters: {
-    text: (route: RouteConfig) => (route.meta && route.meta.text) || route.name,
-  },
 })
 export default class AdminLayout extends Vue {
   @Inject('routes')
   private readonly routes!: RouteConfig[];
+
+  private availableNavs: NavMenu[] = [];
 
   private get currentMainNav() {
     return this.$route.matched[0].name;
@@ -76,19 +74,17 @@ export default class AdminLayout extends Vue {
     return this.$route.matched[1].name!;
   }
 
-  private get mainNavs() {
-    return this.routes.filter(route => route.name !== 'root' && isMenuShown(route));
-  }
-
   private get subNavs() {
     const { matched } = this.$route;
-    const mainNav = this.routes.find(route => route.name === matched[0].name);
+    const mainNav = this.availableNavs.find(nav => nav.name === matched[0].name);
 
-    return mainNav && mainNav.children ? mainNav.children.filter(isMenuShown) : [];
+    return (mainNav && mainNav.children) || [];
   }
 
   private created(): void {
-    this.$store.dispatch('session/fetchCurrentUser', { routes: this.routes });
+    this.$store.dispatch('session/fetchCurrentUser', {
+      success: accessible => (this.availableNavs = resolveAvailableNavs(accessible, this.routes)),
+    });
   }
 }
 </script>

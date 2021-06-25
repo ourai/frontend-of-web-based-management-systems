@@ -3,6 +3,7 @@ import Vue, { VueConstructor } from 'vue';
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
 
 import { isFunction } from './is';
+import { noop } from './function';
 import { ModuleDependencies, ModuleResources, getDependencies, getComponents } from './module';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
@@ -57,8 +58,6 @@ type ObjectViewContextOptions = {
 
 type ObjectViewContext<Repository> = ViewContext<Repository> &
   Record<'insert' | 'update', ShorthandRequest>;
-
-function noop() {} // eslint-disable-line @typescript-eslint/no-empty-function
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;

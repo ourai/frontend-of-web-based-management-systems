@@ -1,6 +1,7 @@
 import { ActionHandler } from 'vuex';
 
 import { isArray } from '@/utils/is';
+import { noop } from '@/utils/function';
 
 import { UserInfo, UserPermission, UserAndPermissions } from './typing';
 import { MODULE_NAME } from './helper';
@@ -32,10 +33,7 @@ const state: () => SessionState = () => ({
 
 const mutations: SessionMutations<SessionState> = {
   updateCurrentUser: (state, payload) => (state.user = payload),
-  updateAuthority: (state, payload) => {
-    console.log('updateAuthority', payload);
-    state.authority = payload;
-  },
+  updateAuthority: (state, payload) => (state.authority = payload),
 };
 
 function getAccessibleAuthority(
@@ -55,16 +53,24 @@ function getAccessibleAuthority(
 }
 
 const actions: SessionActions<SessionState> = {
-  fetchCurrentUser: async ({ commit }) => {
-    context.execute('getCurrentUser', (data: UserAndPermissions) => {
-      const { permissions, ...others } = data;
+  fetchCurrentUser: async ({ commit }, payload = {}) => {
+    const { success = noop, fail = noop } = payload;
 
-      commit('updateCurrentUser', others);
-      commit('updateAuthority', {
-        accessible: getAccessibleAuthority(permissions),
-        operable: null,
-      });
-    });
+    context
+      .execute(
+        'getCurrentUser',
+        (data: UserAndPermissions) => {
+          const { permissions, ...others } = data;
+          const accessible = getAccessibleAuthority(permissions);
+
+          commit('updateCurrentUser', others);
+          commit('updateAuthority', { accessible, operable: null });
+
+          success(accessible);
+        },
+        fail,
+      )
+      .catch(fail);
   },
 };
 

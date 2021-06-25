@@ -3,7 +3,7 @@ module.exports = {
     username: 'ourai',
     nickname: '欧雷',
     permissions: {
-      otaku: ['animationList', 'comicList'],
+      otaku: ['animation:read', 'comic:read', 'game:read'],
     },
   },
 };
