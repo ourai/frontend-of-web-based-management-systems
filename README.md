@@ -1,13 +1,8 @@
-# 中后台前端应用示例
+# 中后台前端应用
 
-文章系列「[聊聊中后台前端应用](https://ourai.ws/series/talking-about-frontend-of-web-based-management-systems/)」的辅助示例。
+本仓库是文章系列「[聊聊中后台前端应用](https://ourai.ws/series/talking-about-frontend-of-web-based-management-systems/)」的辅助示例，同时也是中后台前端应用的样板。
 
-## 文章目录
-
-- [前言](https://ourai.ws/posts/reason-for-talking-about-frontend-of-web-based-management-systems)
-- [目录结构划分模式](https://ourai.ws/posts/patterns-of-directory-structure-in-frontend-projects)
-
-## 包含功能
+## 主要功能
 
 - 目录结构划分
   - 「[野生](app/structure/wild)」模式
@@ -24,6 +19,13 @@
   - _TODO: 访问权限控制_
 - HTTP 请求
   - 响应返回结构统一
+
+## 实践指引
+
+基于本仓库所秉承的思想的实践——
+
+- [目录结构划分模式](cookbook/patterns-of-directory-structure.md)
+- _TODO: 如何写部件与视图？_
 
 ## 本地预览
 
