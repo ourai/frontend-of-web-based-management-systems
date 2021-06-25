@@ -5,16 +5,21 @@ import { ComicList } from '../../domain/comic/views';
 import { GameList } from '../../domain/game/views';
 import { NovelList } from '../../domain/novel/views';
 
-import AdminLayout from '../layouts/AdminLayout.vue';
+import AdminLayout from '../layouts/admin';
 
 export default {
   name: 'otaku',
   path: '/otaku',
   component: AdminLayout,
-  meta: { text: '宅文化' },
+  meta: { text: '宅文化', auth: 'otaku' },
   redirect: '/otaku/animations',
   children: [
-    { name: 'animationList', path: 'animations', component: AnimationList, meta: { text: '动画' } },
+    {
+      name: 'animationList',
+      path: 'animations',
+      component: AnimationList,
+      meta: { text: '动画', auth: 'animationList' },
+    },
     {
       name: 'animationNewForm',
       path: 'animations/new',

@@ -4,7 +4,7 @@ type RouteMeta = {
   text?: string;
   icon?: string;
   show?: boolean;
-  auth?: string[];
+  auth?: string;
 };
 
 type RouteConfig = Omit<_RouteConfig, 'meta' | 'children'> & {

@@ -11,14 +11,18 @@ type ShorthandRequest<ParamsType = RequestParams> = (
   fail?: ResponseFail,
 ) => Promise<ResponseResult>;
 
-type RepositoryExecutor<ActionName = any> = {
-  (actionName: ActionName, success?: ResponseSuccess, fail?: ResponseFail): Promise<ResponseResult>;
+type RepositoryExecutor<ActionName = any, DataType = any> = {
+  (
+    actionName: ActionName,
+    success?: ResponseSuccess<DataType>,
+    fail?: ResponseFail<DataType>,
+  ): Promise<ResponseResult<DataType>>;
   (
     actionName: ActionName,
     params: RequestParams,
-    success?: ResponseSuccess,
-    fail?: ResponseFail,
-  ): Promise<ResponseResult>;
+    success?: ResponseSuccess<DataType>,
+    fail?: ResponseFail<DataType>,
+  ): Promise<ResponseResult<DataType>>;
 };
 
 type ModuleContext<Repository> = {

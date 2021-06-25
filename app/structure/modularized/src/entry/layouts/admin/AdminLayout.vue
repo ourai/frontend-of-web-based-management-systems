@@ -86,6 +86,10 @@ export default class AdminLayout extends Vue {
 
     return mainNav && mainNav.children ? mainNav.children.filter(isMenuShown) : [];
   }
+
+  private created(): void {
+    this.$store.dispatch('session/fetchCurrentUser', { routes: this.routes });
+  }
 }
 </script>
 

@@ -1,4 +1,5 @@
+import storeModules from './store';
 import routes from './router';
 
-export { routes };
+export { storeModules, routes };
 export * from './aspects';
