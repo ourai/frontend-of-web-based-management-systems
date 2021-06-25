@@ -34,6 +34,7 @@ type ModuleContext<Repository> = {
 };
 
 type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
+  getComponents: () => Record<string, VueConstructor>;
   attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
@@ -148,6 +149,7 @@ function createViewContext<Repository>(
 
   return {
     execute: moduleContext.execute,
+    getComponents: moduleContext.getComponents,
     attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),

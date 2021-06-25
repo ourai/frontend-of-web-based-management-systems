@@ -9,5 +9,5 @@ export default {
     utils: { test: testUtil },
     widgets: { test: TestWidget },
   },
-  components: { OlButton: true },
+  components: { OlButton: true, DataTable: true },
 } as ModuleDescriptor;
