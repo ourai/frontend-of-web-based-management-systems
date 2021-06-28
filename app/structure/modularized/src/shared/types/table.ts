@@ -1,13 +1,17 @@
 import { CreateElement, VNode } from 'vue';
 import { ElTableColumn } from 'element-ui/types/table-column';
 
+type ColumnContext<Column> = { row: Record<string, any>; column: Column; index: number };
+
+type CellRenderer<Column> = (
+  h: CreateElement,
+  data: ColumnContext<Column>,
+) => VNode | string | null;
+
 type TableColumn = Partial<ElTableColumn> & {
-  render?: (
-    h: CreateElement,
-    data: { row: Record<string, any>; column: TableColumn; index: number },
-  ) => VNode | string | null;
+  render?: CellRenderer<TableColumn>;
   isValid?: () => boolean;
   [key: string]: any;
 };
 
-export { TableColumn };
+export { ColumnContext, CellRenderer, TableColumn };
