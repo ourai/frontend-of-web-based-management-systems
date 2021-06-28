@@ -3,16 +3,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
+
+import TableField from '@/widgets/TableField';
 
 import { AnimationEntity } from '../../typing';
 
 @Component
-export default class AnimationListTitleField extends Vue {
+export default class AnimationListTitleField extends TableField<AnimationEntity> {
   @Prop({ type: String, default: '' })
   private readonly value!: string;
-
-  @Prop({ type: Object, default: () => ({}) })
-  private readonly row!: AnimationEntity;
 }
 </script>

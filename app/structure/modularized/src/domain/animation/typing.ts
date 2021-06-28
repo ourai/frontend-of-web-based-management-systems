@@ -6,6 +6,7 @@ type AnimationEntity = {
     start: string;
     end: string;
   };
+  episodes: string[];
 };
 
 export { AnimationEntity };
