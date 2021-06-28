@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
 import { Field } from '../types/metadata';
@@ -11,6 +11,7 @@ import {
 } from '../types/context';
 
 import { isFunction } from './is';
+import { capitalize } from './string';
 import { noop } from './function';
 import { getDependencies, getComponents } from './module';
 
@@ -19,27 +20,31 @@ type ListViewContextOptions = {
   getList: string;
   deleteOne?: string;
   deleteList?: string;
+  config?: {
+    hidePagination?: boolean;
+  };
 };
 
 type ObjectViewContextOptions = {
   fields: Field[];
   insert?: string;
   update?: string;
+  config?: Record<string, any>;
 };
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;
 }
 
-function createRepositoryExecutor<Repository>(
-  repository: Repository,
+function createRepositoryExecutor<R>(
+  repository: R,
   resultAsserter: (
     result: ResponseResult,
-    actionName: keyof Repository,
+    actionName: keyof R,
   ) => boolean = isResultLogicallySuccessful,
-): RepositoryExecutor<keyof Repository> {
+): RepositoryExecutor<keyof R> {
   return async function (
-    actionName: keyof Repository,
+    actionName: keyof R,
     params?: RequestParams | ResponseSuccess,
     success?: ResponseSuccess | ResponseFail,
     fail?: ResponseFail,
@@ -74,10 +79,7 @@ function createRepositoryExecutor<Repository>(
   };
 }
 
-function createModuleContext<Repository>(
-  moduleName: string,
-  repository: Repository,
-): ModuleContext<Repository> {
+function createModuleContext<R>(moduleName: string, repository: R): ModuleContext<R> {
   return {
     getModuleName: () => moduleName,
     getDependencies: getDependencies.bind(null, moduleName),
@@ -103,9 +105,7 @@ function callVuexMethodWithNamespace(
   (vm as any).$store[methodName](`${namespace}/${type}`, payload);
 }
 
-function createViewContext<Repository>(
-  moduleContext: ModuleContext<Repository>,
-): ViewContext<Repository> {
+function createViewContext<R>(moduleContext: ModuleContext<R>): ViewContext<R> {
   let _vm: Vue | undefined;
 
   const callVuexMethod = callVuexMethodWithNamespace.bind(
@@ -116,6 +116,7 @@ function createViewContext<Repository>(
 
   return {
     execute: moduleContext.execute,
+    getModuleName: moduleContext.getModuleName,
     getComponents: moduleContext.getComponents,
     attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
@@ -123,19 +124,17 @@ function createViewContext<Repository>(
   };
 }
 
-function createViewContextFactory<Repository>(
-  moduleContext: ModuleContext<Repository>,
-): () => ViewContext<Repository> {
+function createViewContextFactory<R>(moduleContext: ModuleContext<R>): () => ViewContext<R> {
   return () => createViewContext(moduleContext);
 }
 
 function resolvePartialContext<
-  Repository,
+  R,
   ViewContextOptions,
   SpecificViewContext,
   SpecificActionName extends keyof SpecificViewContext
 >(
-  executor: RepositoryExecutor<keyof Repository>,
+  executor: RepositoryExecutor<keyof R>,
   options: ViewContextOptions,
   actionNames: SpecificActionName[],
 ) {
@@ -155,33 +154,65 @@ function resolvePartialContext<
   return { ...actionMap, ...otherOptions };
 }
 
-function createListViewContextFactory<Repository>(
-  moduleContext: ModuleContext<Repository>,
-): (options: ListViewContextOptions) => ListViewContext<Repository> {
-  return (options: ListViewContextOptions) => ({
+function createListViewContext<R>(
+  moduleContext: ModuleContext<R>,
+  options: ListViewContextOptions,
+): ListViewContext<R> {
+  return {
     getFields: () => options.fields,
+    getConfig: () => options.config || {},
     ...resolvePartialContext<
-      Repository,
+      R,
       ListViewContextOptions,
-      ListViewContext<Repository>,
+      ListViewContext<R>,
       'getList' | 'deleteOne' | 'deleteList'
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
     ...createViewContext(moduleContext),
-  });
+  };
 }
 
-function createObjectViewContextFactory<Repository>(
-  moduleContext: ModuleContext<Repository>,
-): (options: ObjectViewContextOptions) => ObjectViewContext<Repository> {
-  return (options: ObjectViewContextOptions) => ({
+function createListViewContextFactory<R>(
+  moduleContext: ModuleContext<R>,
+): (options: ListViewContextOptions) => ListViewContext<R> {
+  return (options: ListViewContextOptions) => createListViewContext(moduleContext, options);
+}
+
+function createObjectViewContext<R>(
+  moduleContext: ModuleContext<R>,
+  options: ObjectViewContextOptions,
+): ObjectViewContext<R> {
+  return {
     getFields: () => options.fields,
+    getConfig: () => options.config || {},
     ...resolvePartialContext<
-      Repository,
+      R,
       ObjectViewContextOptions,
-      ObjectViewContext<Repository>,
+      ObjectViewContext<R>,
       'insert' | 'update'
     >(moduleContext.execute, options, ['insert', 'update']),
     ...createViewContext(moduleContext),
+  };
+}
+
+function createObjectViewContextFactory<R>(
+  moduleContext: ModuleContext<R>,
+): (options: ObjectViewContextOptions) => ObjectViewContext<R> {
+  return (options: ObjectViewContextOptions) => createObjectViewContext(moduleContext, options);
+}
+
+function createTableView<R>(
+  context: ListViewContext<R> | ModuleContext<R>,
+  options?: ListViewContextOptions,
+): VueConstructor {
+  const resolved: ListViewContext<R> = options
+    ? createListViewContext(context as ModuleContext<R>, options)
+    : (context as ListViewContext<R>);
+
+  return Vue.extend({
+    name: `${capitalize(resolved.getModuleName())}List`,
+    components: resolved.getComponents(),
+    template: '<table-view />',
+    provide: { context: resolved },
   });
 }
 
@@ -190,4 +221,5 @@ export {
   createViewContextFactory,
   createListViewContextFactory,
   createObjectViewContextFactory,
+  createTableView,
 };

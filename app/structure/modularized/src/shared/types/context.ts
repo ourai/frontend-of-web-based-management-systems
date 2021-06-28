@@ -32,6 +32,7 @@ type ModuleContext<Repository> = {
 };
 
 type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
+  getModuleName: () => string;
   getComponents: () => Record<string, VueConstructor>;
   attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
@@ -40,6 +41,7 @@ type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
 
 type ListViewContext<Repository> = ViewContext<Repository> & {
   getFields: () => Field[];
+  getConfig: () => Record<string, any>;
   getList: ShorthandRequest;
   deleteOne: ShorthandRequest<string | Record<string, any>>;
   deleteList: ShorthandRequest<string[] | Record<string, any>>;
@@ -48,6 +50,7 @@ type ListViewContext<Repository> = ViewContext<Repository> & {
 type ObjectViewContext<Repository> = ViewContext<Repository> &
   Record<'insert' | 'update', ShorthandRequest> & {
     getFields: () => Field[];
+    getConfig: () => Record<string, any>;
   };
 
 export { RepositoryExecutor, ModuleContext, ViewContext, ListViewContext, ObjectViewContext };

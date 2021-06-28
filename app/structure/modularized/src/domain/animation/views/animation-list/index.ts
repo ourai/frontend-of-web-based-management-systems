@@ -1,9 +1,11 @@
-import { createListViewContext } from '../../context';
+import { createTableView } from '@/utils/context';
+
+import context from '../../context';
 
 import TitleField from './TitleField.vue';
 import EpisodesField from './EpisodesField.vue';
 
-export default createListViewContext({
+export default createTableView(context, {
   fields: [
     { name: 'title', label: '标题', render: TitleField, config: { width: '300' } },
     { name: 'description', label: '简介' },
@@ -15,4 +17,7 @@ export default createListViewContext({
     },
   ],
   getList: 'getAllAnimationList',
+  config: {
+    hidePagination: true,
+  },
 });

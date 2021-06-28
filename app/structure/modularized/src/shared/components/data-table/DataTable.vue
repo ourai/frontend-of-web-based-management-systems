@@ -23,7 +23,6 @@
       <el-pagination
         :current-page="currentPage"
         :page-size="pageSize"
-        :page-sizes="pageSizes"
         :total="total"
         layout="total, sizes, prev, pager, next, jumper"
         @current-change="handleCurrentChange"

@@ -1,5 +1,5 @@
 <template>
-  <data-table :data="dataSource" :columns="columns" hide-pagination />
+  <data-table :data="dataSource" :columns="columns" v-bind="config" />
 </template>
 
 <script lang="ts">
@@ -21,6 +21,10 @@ export default class TableView extends Vue {
   private dataSource: any[] = [];
 
   private columns: TableColumn[] = [];
+
+  private get config() {
+    return this.context.getConfig();
+  }
 
   private created(): void {
     const ctx = this.context;
