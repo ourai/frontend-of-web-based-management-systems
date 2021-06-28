@@ -1,6 +1,11 @@
 import { VueConstructor } from 'vue';
 
-import { ModuleResourceType, ModuleComponentRefs, ModuleDescriptor } from '../types';
+import {
+  ModuleResources,
+  ModuleDependencies,
+  ModuleComponentRefs,
+  ModuleDescriptor,
+} from '../types';
 import { isBoolean, isString } from './is';
 import { getComponent } from './component';
 
@@ -11,10 +16,6 @@ type ResolvedModule = Required<Omit<ModuleDescriptor, 'name' | 'components'>> & 
   componentRefs: ModuleComponentRefs;
   components: ModuleComponents;
 };
-
-type ModuleResources = Partial<Record<ModuleResourceType, any>>;
-
-type ModuleDependencies = Record<string, ModuleResources>;
 
 const moduleMap = new Map<string, ResolvedModule>();
 
@@ -144,4 +145,4 @@ function getComponents(moduleName: string): ModuleComponents {
   return ensureModuleExists(moduleName).components;
 }
 
-export { ModuleDependencies, ModuleResources, registerModules, getDependencies, getComponents };
+export { registerModules, getDependencies, getComponents };

@@ -2,7 +2,14 @@ import { TableColumn } from '@/types/table';
 
 import { createListViewContext } from '../../context';
 
-const context = createListViewContext({ getList: 'getAllAnimationList' });
+const context = createListViewContext({
+  fields: [
+    { name: 'title', label: '标题', config: { width: '300' } },
+    { name: 'description', label: '简介' },
+    { name: 'episodes', label: '集数', config: { width: '60', align: 'center' } },
+  ],
+  getList: 'getAllAnimationList',
+});
 
 const columns: TableColumn[] = [
   {
@@ -28,4 +35,4 @@ const columns: TableColumn[] = [
   },
 ];
 
-export { columns, context as default };
+export { context as default };

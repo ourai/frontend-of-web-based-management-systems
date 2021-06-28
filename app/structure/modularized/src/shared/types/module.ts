@@ -1,5 +1,9 @@
 type ModuleResourceType = 'services' | 'utils' | 'widgets';
 
+type ModuleResources = Partial<Record<ModuleResourceType, any>>;
+
+type ModuleDependencies = Record<string, ModuleResources>;
+
 type ModuleComponentRefs = Record<string, boolean | string>;
 
 type ModuleDescriptor = {
@@ -9,4 +13,10 @@ type ModuleDescriptor = {
   components?: ModuleComponentRefs;
 };
 
-export { ModuleResourceType, ModuleComponentRefs, ModuleDescriptor };
+export {
+  ModuleResourceType,
+  ModuleResources,
+  ModuleDependencies,
+  ModuleComponentRefs,
+  ModuleDescriptor,
+};

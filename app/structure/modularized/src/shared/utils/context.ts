@@ -1,64 +1,31 @@
-import Vue, { VueConstructor } from 'vue';
+import Vue from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
+import { Field } from '../types/metadata';
+import {
+  RepositoryExecutor,
+  ModuleContext,
+  ViewContext,
+  ListViewContext,
+  ObjectViewContext,
+} from '../types/context';
 
 import { isFunction } from './is';
 import { noop } from './function';
-import { ModuleDependencies, ModuleResources, getDependencies, getComponents } from './module';
-
-type ShorthandRequest<ParamsType = RequestParams> = (
-  params: ParamsType,
-  success?: ResponseSuccess,
-  fail?: ResponseFail,
-) => Promise<ResponseResult>;
-
-type RepositoryExecutor<ActionName = any, DataType = any> = {
-  (
-    actionName: ActionName,
-    success?: ResponseSuccess<DataType>,
-    fail?: ResponseFail<DataType>,
-  ): Promise<ResponseResult<DataType>>;
-  (
-    actionName: ActionName,
-    params: RequestParams,
-    success?: ResponseSuccess<DataType>,
-    fail?: ResponseFail<DataType>,
-  ): Promise<ResponseResult<DataType>>;
-};
-
-type ModuleContext<Repository> = {
-  getModuleName: () => string;
-  getDependencies: (refPath?: string) => ModuleDependencies | ModuleResources | undefined;
-  getComponents: () => Record<string, VueConstructor>;
-  execute: RepositoryExecutor<keyof Repository>;
-};
-
-type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
-  getComponents: () => Record<string, VueConstructor>;
-  attach: (vm: Vue) => void;
-  commit: (type: string, payload?: any) => void;
-  dispatch: (type: string, payload?: any) => Promise<void>;
-};
+import { getDependencies, getComponents } from './module';
 
 type ListViewContextOptions = {
+  fields: Field[];
   getList: string;
   deleteOne?: string;
   deleteList?: string;
 };
 
-type ListViewContext<Repository> = ViewContext<Repository> & {
-  getList: ShorthandRequest;
-  deleteOne: ShorthandRequest<string | Record<string, any>>;
-  deleteList: ShorthandRequest<string[] | Record<string, any>>;
-};
-
 type ObjectViewContextOptions = {
+  fields: Field[];
   insert?: string;
   update?: string;
 };
-
-type ObjectViewContext<Repository> = ViewContext<Repository> &
-  Record<'insert' | 'update', ShorthandRequest>;
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;
@@ -192,6 +159,7 @@ function createListViewContextFactory<Repository>(
   moduleContext: ModuleContext<Repository>,
 ): (options: ListViewContextOptions) => ListViewContext<Repository> {
   return (options: ListViewContextOptions) => ({
+    getFields: () => options.fields,
     ...resolvePartialContext<
       Repository,
       ListViewContextOptions,
@@ -206,6 +174,7 @@ function createObjectViewContextFactory<Repository>(
   moduleContext: ModuleContext<Repository>,
 ): (options: ObjectViewContextOptions) => ObjectViewContext<Repository> {
   return (options: ObjectViewContextOptions) => ({
+    getFields: () => options.fields,
     ...resolvePartialContext<
       Repository,
       ObjectViewContextOptions,
