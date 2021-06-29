@@ -1,15 +1,11 @@
 import { ModuleDescriptor } from '@/types';
 
 import { MODULE_NAME } from './helper';
-import TableView from './widgets/table-view';
+import * as widgets from './widgets';
 
 export default {
   name: MODULE_NAME,
-  exports: {
-    widgets: {
-      TableView,
-    },
-  },
+  exports: { widgets },
   components: {
     OlButton: true,
     DataTable: true,

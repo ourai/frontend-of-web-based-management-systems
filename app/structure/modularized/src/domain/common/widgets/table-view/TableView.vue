@@ -35,7 +35,7 @@ components.ActionRenderer = ActionRenderer;
 @Component({ components })
 export default class TableView extends Vue {
   @Inject({ from: 'context', default: null })
-  private readonly context!: ListViewContext<any>;
+  private readonly context!: ListViewContext;
 
   private dataSource: any[] = [];
 

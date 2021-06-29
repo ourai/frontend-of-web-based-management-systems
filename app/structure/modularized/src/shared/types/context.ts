@@ -46,6 +46,7 @@ type ListViewContextOptions = ViewContextOptions<TableViewConfig> & {
 type ObjectViewContextOptions = ViewContextOptions & {
   insert?: string;
   update?: string;
+  getOne?: string;
 };
 
 type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> & {
@@ -69,6 +70,7 @@ type ListViewContext<Repository = any, ValueType = any> = ViewContext<Repository
 
 type ObjectViewContext<Repository = any, ValueType = any> = ViewContext<Repository> &
   Record<'insert' | 'update', ShorthandRequest> & {
+    getOne: ShorthandRequest<string>;
     getValue: <VT = ValueType>() => VT;
   };
 
