@@ -1,8 +1,10 @@
 import Vue, { VNodeData, VueConstructor } from 'vue';
+import { MessageBox } from 'element-ui';
 
 import { ActionRenderer, MixedActionRenderer, ActionDescriptor } from '@/types/metadata';
 import { ViewContext, ListViewContext } from '@/types/context';
 import { isString } from '@/utils/is';
+import { noop } from '@/utils/function';
 
 const DEFAULT_ACTION_RENDER_TYPE = 'button';
 
@@ -50,21 +52,33 @@ function resolveVirtualNodeData(
     nodeData.props = action.config || {};
   }
 
-  let beforeExecute: () => void | undefined;
+  let beforeExecute: ((callback: () => Promise<void>) => void) | undefined;
 
   if (action.danger || action.confirm) {
-    beforeExecute = () =>
-      alert(isString(action.confirm) ? action.confirm : `确定要${action.text || '执行此操作'}？`);
+    beforeExecute = callback =>
+      MessageBox.confirm(
+        isString(action.confirm)
+          ? (action.confirm as string)
+          : `确定要${action.text || '执行此操作'}？`,
+        '提示',
+        { type: 'warning' },
+      )
+        .then(callback)
+        .catch(noop);
   }
+
+  const executeAction = async () => {
+    if (action.execute) {
+      await Promise.resolve(action.execute(viewContext, vm));
+    }
+  };
 
   nodeData.on = {
     click: () => {
       if (beforeExecute) {
-        beforeExecute();
-      }
-
-      if (action.execute) {
-        action.execute(viewContext, vm);
+        beforeExecute(executeAction);
+      } else {
+        executeAction();
       }
     },
   };
