@@ -1,10 +1,11 @@
 import { CreateElement, VNode } from 'vue';
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Inject } from 'vue-property-decorator';
 
 import { Action } from '@/types/metadata';
+import { ViewContext } from '@/types/context';
 
 import { getComponents } from '../../context';
-import { DEFAULT_ACTION_COMPONENT, resolveVirtualNodeData } from './helper';
+import { getActionComponent, resolveVirtualNodeData } from './helper';
 
 @Component({
   // @ts-ignore
@@ -12,16 +13,19 @@ import { DEFAULT_ACTION_COMPONENT, resolveVirtualNodeData } from './helper';
   components: getComponents(),
 })
 export default class ActionRenderer extends Vue {
+  @Inject({ from: 'context', default: null })
+  private readonly context!: ViewContext<any>;
+
   @Prop({ type: Object, default: null })
   private readonly action!: Action;
 
   private render(h: CreateElement): VNode | null {
-    if (!this.action) {
-      return null;
-    }
-
-    const { render = DEFAULT_ACTION_COMPONENT, text } = this.action;
-
-    return h(render, resolveVirtualNodeData(this.action), text);
+    return this.action
+      ? h(
+          getActionComponent(this.action.render),
+          resolveVirtualNodeData(this.action, this.context, this),
+          this.action.text || '',
+        )
+      : null;
   }
 }
