@@ -25,6 +25,7 @@ export default createTableView(context, {
   ],
   getList: 'getAllAnimationList',
   config: {
+    checkable: true,
     hidePagination: true,
   },
 });

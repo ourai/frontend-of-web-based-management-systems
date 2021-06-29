@@ -1,4 +1,4 @@
-import { Action } from '../types/metadata';
+import { ActionDescriptor } from '../types/metadata';
 import { ViewContext, ListViewContext } from '../types/context';
 import { isString } from './is';
 
@@ -29,8 +29,13 @@ const builtInActions = ([
     context: 'single',
     text: '删除',
     danger: true,
-    execute: (context: ListViewContext) =>
-      context.deleteOne && context.deleteOne(context.getValue()[0]),
+    execute: (context: ListViewContext) => {
+      if (!context.deleteOne) {
+        return;
+      }
+
+      context.deleteOne(context.getValue()[0]);
+    },
   },
   {
     name: 'deleteList',
@@ -40,14 +45,14 @@ const builtInActions = ([
     execute: (context: ListViewContext) =>
       context.deleteList && context.deleteList(context.getValue()),
   },
-] as Action[]).reduce((prev, action) => ({ ...prev, [action.name!]: action }), {});
+] as ActionDescriptor[]).reduce((prev, action) => ({ ...prev, [action.name!]: action }), {});
 
-function resolveAction(refOrDescriptor: string | Action): Action | undefined {
+function resolveAction(refOrDescriptor: string | ActionDescriptor): ActionDescriptor | undefined {
   if (isString(refOrDescriptor)) {
     return builtInActions[refOrDescriptor as string];
   }
 
-  const descriptor = refOrDescriptor as Action;
+  const descriptor = refOrDescriptor as ActionDescriptor;
   const builtInAction = builtInActions[descriptor.name!];
 
   return builtInAction ? { ...builtInAction, ...descriptor } : descriptor;

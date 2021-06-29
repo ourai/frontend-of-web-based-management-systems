@@ -1,10 +1,14 @@
 import { VueConstructor, CreateElement } from 'vue';
 
 import { ColumnContext, CellRenderer, TableColumn } from '@/types/table';
+import { TableViewConfig } from '@/types/metadata';
 import { ListViewContext } from '@/types/context';
 import { isFunction } from '@/utils/is';
+import { omit } from '@/utils/object';
+import { resolveViewContextInAction } from '@/utils/context';
 
 import ActionRenderer from '../action-renderer';
+import { DataTableProps } from './typing';
 
 function resolveCellRenderer(
   renderer: string | VueConstructor | CellRenderer<TableColumn>,
@@ -19,13 +23,17 @@ function resolveCellRenderer(
   return (h: CreateElement) => h('div');
 }
 
-function resolveTableColumns(context: ListViewContext<any>): TableColumn[] {
+function resolveTableColumns(context: ListViewContext): TableColumn[] {
   const cols: TableColumn[] = context.getFields().map(({ name, label, render, config = {} }) => ({
     prop: name,
     label,
     render: render ? resolveCellRenderer(render) : undefined,
     ...config,
   }));
+
+  if ((context.getConfig() as TableViewConfig).checkable) {
+    cols.unshift({ type: 'selection', width: '55', align: 'center' });
+  }
 
   cols.push({
     label: '操作',
@@ -34,7 +42,13 @@ function resolveTableColumns(context: ListViewContext<any>): TableColumn[] {
         'div',
         context.getActionsByContextType('single').map(action =>
           h(ActionRenderer, {
-            props: { action, contextGetter: () => ({ ...context, getValue: () => [row] }) },
+            props: {
+              action,
+              contextGetter: () => ({
+                ...resolveViewContextInAction(context),
+                getValue: () => [row],
+              }),
+            },
           }),
         ),
       ),
@@ -43,4 +57,8 @@ function resolveTableColumns(context: ListViewContext<any>): TableColumn[] {
   return cols;
 }
 
-export { resolveTableColumns };
+function resolveTableProps(config: Record<string, any>): DataTableProps {
+  return omit(config, ['checkable']);
+}
+
+export { resolveTableColumns, resolveTableProps };

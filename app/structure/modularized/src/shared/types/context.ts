@@ -2,7 +2,7 @@ import { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
-import { Field, ActionContextType, Action } from './metadata';
+import { TableViewConfig, FieldDescriptor, ActionContextType, ActionDescriptor } from './metadata';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,
@@ -32,12 +32,12 @@ type ModuleContext<Repository> = {
 };
 
 type ViewContextOptions<ConfigType = Record<string, any>> = {
-  fields: Field[];
-  actions?: (Action | string)[];
+  fields: FieldDescriptor[];
+  actions?: (ActionDescriptor | string)[];
   config?: ConfigType;
 };
 
-type ListViewContextOptions = ViewContextOptions<{ hidePagination?: boolean }> & {
+type ListViewContextOptions = ViewContextOptions<TableViewConfig> & {
   getList: string;
   deleteOne?: string;
   deleteList?: string;
@@ -51,9 +51,9 @@ type ObjectViewContextOptions = ViewContextOptions & {
 type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> & {
   getModuleName: () => string;
   getComponents: () => Record<string, VueConstructor>;
-  getFields: () => Field[];
-  getActions: () => Action[];
-  getActionsByContextType: (contextType: ActionContextType) => Action[];
+  getFields: () => FieldDescriptor[];
+  getActions: () => ActionDescriptor[];
+  getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
   getConfig: () => Record<string, any>;
   attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
@@ -72,6 +72,11 @@ type ObjectViewContext<Repository = any, ValueType = any> = ViewContext<Reposito
     getValue: <VT = ValueType>() => VT;
   };
 
+type ViewContextInAction<VC = ViewContext> = Omit<
+  VC,
+  keyof Omit<ViewContext, 'execute' | 'commit' | 'dispatch'>
+>;
+
 export {
   RepositoryExecutor,
   ModuleContext,
@@ -81,4 +86,5 @@ export {
   ViewContext,
   ListViewContext,
   ObjectViewContext,
+  ViewContextInAction,
 };

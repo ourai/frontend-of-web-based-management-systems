@@ -1,7 +1,7 @@
 import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
-import { ActionContextType, Action } from '../types/metadata';
+import { ActionContextType, ActionDescriptor } from '../types/metadata';
 import {
   RepositoryExecutor,
   ModuleContext,
@@ -11,11 +11,13 @@ import {
   ViewContext,
   ListViewContext,
   ObjectViewContext,
+  ViewContextInAction,
 } from '../types/context';
 
 import { isFunction } from './is';
 import { capitalize } from './string';
 import { noop } from './function';
+import { omit } from './object';
 import { getDependencies, getComponents } from './module';
 import { resolveAction } from './action';
 
@@ -104,14 +106,16 @@ function createViewContext<R, CT>(
     moduleContext.getModuleName(),
   );
 
-  const actions = (options.actions || []).map(resolveAction).filter(action => !!action) as Action[];
-  const actionContextGroups = {} as Record<ActionContextType, Action[]>;
+  const actions = (options.actions || [])
+    .map(resolveAction)
+    .filter(action => !!action) as ActionDescriptor[];
+  const actionContextGroups = {} as Record<ActionContextType, ActionDescriptor[]>;
 
   actions.forEach(action => {
     const contextType = action.context || 'single';
 
     if (!actionContextGroups[contextType]) {
-      actionContextGroups[contextType] = [] as Action[];
+      actionContextGroups[contextType] = [] as ActionDescriptor[];
     }
 
     actionContextGroups[contextType].push(action);
@@ -223,10 +227,25 @@ function createTableView<R>(
   });
 }
 
+function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
+  context: VC,
+): ViewContextInAction<VC> {
+  return omit(context, [
+    'getModuleName',
+    'getComponents',
+    'getActions',
+    'getActionsByContextType',
+    'getFields',
+    'getConfig',
+    'attach',
+  ]);
+}
+
 export {
   createModuleContext,
   createViewContextFactory,
   createListViewContextFactory,
   createObjectViewContextFactory,
   createTableView,
+  resolveViewContextInAction,
 };

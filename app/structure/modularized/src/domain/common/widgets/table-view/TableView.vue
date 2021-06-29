@@ -8,7 +8,12 @@
         v-for="action in topActions"
       />
     </div>
-    <data-table class="TableView-dataTable" :data="dataSource" :columns="columns" v-bind="config" />
+    <data-table
+      class="TableView-dataTable"
+      :data="dataSource"
+      :columns="columns"
+      v-bind="tableProps"
+    />
   </div>
 </template>
 
@@ -17,10 +22,12 @@ import { Vue, Component, Inject } from 'vue-property-decorator';
 
 import { ListViewContext } from '@/types/context';
 import { TableColumn } from '@/types/table';
+import { resolveViewContextInAction } from '@/utils/context';
 
 import { getComponents } from '../../context';
 import ActionRenderer from '../action-renderer';
-import { resolveTableColumns } from './helper';
+import { DataTableProps } from './typing';
+import { resolveTableColumns, resolveTableProps } from './helper';
 
 const components = getComponents();
 
@@ -35,25 +42,23 @@ export default class TableView extends Vue {
 
   private columns: TableColumn[] = [];
 
-  private get config() {
-    return this.context.getConfig();
-  }
+  private tableProps: DataTableProps = {};
 
   private get topActions() {
     return this.context.getActions().filter(({ context }) => context && context !== 'single');
   }
 
   private get contextGetter() {
-    return () => ({ ...this.context, getValue: () => this.dataSource });
+    return () => ({ ...resolveViewContextInAction(this.context), getValue: () => this.dataSource });
   }
 
   private created(): void {
     const ctx = this.context;
 
-    if (ctx) {
-      this.columns = resolveTableColumns(ctx);
-      ctx.getList({}, data => (this.dataSource = data));
-    }
+    this.columns = resolveTableColumns(ctx);
+    this.tableProps = resolveTableProps(ctx.getConfig());
+
+    ctx.getList({}, data => (this.dataSource = data));
   }
 }
 </script>

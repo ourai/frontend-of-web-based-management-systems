@@ -1,6 +1,6 @@
 import Vue, { VNodeData, VueConstructor } from 'vue';
 
-import { ActionRenderer, MixedActionRenderer, Action } from '@/types/metadata';
+import { ActionRenderer, MixedActionRenderer, ActionDescriptor } from '@/types/metadata';
 import { ViewContext } from '@/types/context';
 import { isString } from '@/utils/is';
 
@@ -22,7 +22,11 @@ function getActionComponent(
     : (renderer as VueConstructor);
 }
 
-function resolveVirtualNodeData(action: Action, viewContext: ViewContext<any>, vm: Vue): VNodeData {
+function resolveVirtualNodeData(
+  action: ActionDescriptor,
+  viewContext: ViewContext<any>,
+  vm: Vue,
+): VNodeData {
   const nodeData: VNodeData = { staticClass: 'ActionRenderer' };
   const renderer = action.render || DEFAULT_ACTION_RENDER_TYPE;
 

@@ -1,7 +1,7 @@
 import { CreateElement, VNode } from 'vue';
-import { Vue, Component, Prop, Inject } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
-import { Action } from '@/types/metadata';
+import { ActionDescriptor } from '@/types/metadata';
 import { ViewContext } from '@/types/context';
 
 import { getComponents } from '../../context';
@@ -14,7 +14,7 @@ import { getActionComponent, resolveVirtualNodeData } from './helper';
 })
 export default class ActionRenderer extends Vue {
   @Prop({ type: Object, default: null })
-  private readonly action!: Action;
+  private readonly action!: ActionDescriptor;
 
   @Prop({ type: Function, default: () => {} }) // eslint-disable-line @typescript-eslint/no-empty-function
   private readonly contextGetter!: () => ViewContext;
