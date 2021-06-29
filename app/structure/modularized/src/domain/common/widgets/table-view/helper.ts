@@ -29,12 +29,14 @@ function resolveTableColumns(context: ListViewContext<any>): TableColumn[] {
 
   cols.push({
     label: '操作',
-    render: h =>
+    render: (h, { row }) =>
       h(
         'div',
-        context
-          .getActionsByContextType('single')
-          .map(action => h(ActionRenderer, { props: { action } })),
+        context.getActionsByContextType('single').map(action =>
+          h(ActionRenderer, {
+            props: { action, contextGetter: () => ({ ...context, getValue: () => [row] }) },
+          }),
+        ),
       ),
   });
 

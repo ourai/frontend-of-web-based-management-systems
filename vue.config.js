@@ -15,7 +15,6 @@ module.exports = {
     },
     resolve: {
       alias: {
-        vue$: 'vue/dist/vue.esm.js',
         '@': resolve(`${APP_SRC}/shared`),
         '@petals': resolve('./external/petals'),
         '@kokiri': resolve('./external/kokiri'),

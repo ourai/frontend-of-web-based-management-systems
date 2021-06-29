@@ -13,17 +13,17 @@ import { getActionComponent, resolveVirtualNodeData } from './helper';
   components: getComponents(),
 })
 export default class ActionRenderer extends Vue {
-  @Inject({ from: 'context', default: null })
-  private readonly context!: ViewContext<any>;
-
   @Prop({ type: Object, default: null })
   private readonly action!: Action;
+
+  @Prop({ type: Function, default: () => {} }) // eslint-disable-line @typescript-eslint/no-empty-function
+  private readonly contextGetter!: () => ViewContext;
 
   private render(h: CreateElement): VNode | null {
     return this.action
       ? h(
           getActionComponent(this.action.render),
-          resolveVirtualNodeData(this.action, this.context, this),
+          resolveVirtualNodeData(this.action, this.contextGetter(), this),
           this.action.text || '',
         )
       : null;

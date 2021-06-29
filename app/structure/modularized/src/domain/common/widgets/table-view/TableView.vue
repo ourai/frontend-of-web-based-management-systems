@@ -1,7 +1,12 @@
 <template>
   <div class="TableView">
     <div class="TableView-tableActions" v-if="topActions.length > 0">
-      <action-renderer :action="action" :key="action.text" v-for="action in topActions" />
+      <action-renderer
+        :action="action"
+        :context-getter="contextGetter"
+        :key="action.text"
+        v-for="action in topActions"
+      />
     </div>
     <data-table class="TableView-dataTable" :data="dataSource" :columns="columns" v-bind="config" />
   </div>
@@ -36,6 +41,10 @@ export default class TableView extends Vue {
 
   private get topActions() {
     return this.context.getActions().filter(({ context }) => context && context !== 'single');
+  }
+
+  private get contextGetter() {
+    return () => ({ ...this.context, getValue: () => this.dataSource });
   }
 
   private created(): void {

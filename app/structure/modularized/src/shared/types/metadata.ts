@@ -21,6 +21,7 @@ type ActionRenderer = 'button' | 'link';
 type MixedActionRenderer = ActionRenderer | VueConstructor;
 
 type Action = {
+  name?: string;
   context?: ActionContextType;
   text?: string;
   primary?: boolean;

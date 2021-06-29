@@ -17,6 +17,7 @@ import { isFunction } from './is';
 import { capitalize } from './string';
 import { noop } from './function';
 import { getDependencies, getComponents } from './module';
+import { resolveAction } from './action';
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;
@@ -103,7 +104,7 @@ function createViewContext<R, CT>(
     moduleContext.getModuleName(),
   );
 
-  const actions = options.actions || [];
+  const actions = (options.actions || []).map(resolveAction).filter(action => !!action) as Action[];
   const actionContextGroups = {} as Record<ActionContextType, Action[]>;
 
   actions.forEach(action => {
@@ -174,6 +175,7 @@ function createListViewContext<R>(
       'getList' | 'deleteOne' | 'deleteList'
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
     ...createViewContext(moduleContext, options),
+    getValue: () => [],
   };
 }
 
@@ -195,6 +197,7 @@ function createObjectViewContext<R>(
       'insert' | 'update'
     >(moduleContext.execute, options, ['insert', 'update']),
     ...createViewContext(moduleContext, options),
+    getValue: () => ({} as any),
   };
 }
 
@@ -215,8 +218,8 @@ function createTableView<R>(
   return Vue.extend({
     name: `${capitalize(resolved.getModuleName())}List`,
     components: resolved.getComponents(),
-    template: '<table-view />',
     provide: { context: resolved },
+    render: h => h('TableView'),
   });
 }
 
