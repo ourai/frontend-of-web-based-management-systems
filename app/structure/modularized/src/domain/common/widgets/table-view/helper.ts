@@ -1,8 +1,10 @@
 import { VueConstructor, CreateElement } from 'vue';
 
 import { ColumnContext, CellRenderer, TableColumn } from '@/types/table';
-import { Field } from '@/types/metadata';
+import { ListViewContext } from '@/types/context';
 import { isFunction } from '@/utils/is';
+
+import ActionRenderer from '../action-renderer';
 
 function resolveCellRenderer(
   renderer: string | VueConstructor | CellRenderer<TableColumn>,
@@ -17,13 +19,26 @@ function resolveCellRenderer(
   return (h: CreateElement) => h('div');
 }
 
-function resolveTableColumns(fields: Field[]): TableColumn[] {
-  return fields.map(({ name, label, render, config = {} }) => ({
+function resolveTableColumns(context: ListViewContext<any>): TableColumn[] {
+  const cols: TableColumn[] = context.getFields().map(({ name, label, render, config = {} }) => ({
     prop: name,
     label,
     render: render ? resolveCellRenderer(render) : undefined,
     ...config,
   }));
+
+  cols.push({
+    label: '操作',
+    render: h =>
+      h(
+        'div',
+        context
+          .getActionsByContextType('single')
+          .map(action => h(ActionRenderer, { props: { action } })),
+      ),
+  });
+
+  return cols;
 }
 
 export { resolveTableColumns };

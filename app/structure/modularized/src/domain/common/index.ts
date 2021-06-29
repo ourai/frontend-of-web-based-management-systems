@@ -11,6 +11,7 @@ export default {
     },
   },
   components: {
+    OlButton: true,
     DataTable: true,
   },
 } as ModuleDescriptor;

@@ -9,8 +9,8 @@ export default Vue.extend({
     column: { type: Object },
     renderContent: { type: Function },
   },
-  render: (h, { props }) =>
-    props.renderContent(h, {
+  render: (_, { props, parent }) =>
+    props.renderContent(parent.$parent.$createElement, {
       row: props.row,
       column: props.column,
       index: props.rowIndex,

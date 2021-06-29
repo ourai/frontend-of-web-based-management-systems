@@ -2,7 +2,7 @@ import { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
-import { Field } from './metadata';
+import { Field, ActionContextType, Action } from './metadata';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,
@@ -31,26 +31,51 @@ type ModuleContext<Repository> = {
   execute: RepositoryExecutor<keyof Repository>;
 };
 
+type ViewContextOptions<ConfigType = Record<string, any>> = {
+  fields: Field[];
+  actions?: Action[];
+  config?: ConfigType;
+};
+
+type ListViewContextOptions = ViewContextOptions<{ hidePagination?: boolean }> & {
+  getList: string;
+  deleteOne?: string;
+  deleteList?: string;
+};
+
+type ObjectViewContextOptions = ViewContextOptions & {
+  insert?: string;
+  update?: string;
+};
+
 type ViewContext<Repository> = Pick<ModuleContext<Repository>, 'execute'> & {
   getModuleName: () => string;
   getComponents: () => Record<string, VueConstructor>;
+  getFields: () => Field[];
+  getActions: () => Action[];
+  getActionsByContextType: (contextType: ActionContextType) => Action[];
+  getConfig: () => Record<string, any>;
   attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
 };
 
 type ListViewContext<Repository> = ViewContext<Repository> & {
-  getFields: () => Field[];
-  getConfig: () => Record<string, any>;
   getList: ShorthandRequest;
   deleteOne: ShorthandRequest<string | Record<string, any>>;
   deleteList: ShorthandRequest<string[] | Record<string, any>>;
 };
 
 type ObjectViewContext<Repository> = ViewContext<Repository> &
-  Record<'insert' | 'update', ShorthandRequest> & {
-    getFields: () => Field[];
-    getConfig: () => Record<string, any>;
-  };
+  Record<'insert' | 'update', ShorthandRequest>;
 
-export { RepositoryExecutor, ModuleContext, ViewContext, ListViewContext, ObjectViewContext };
+export {
+  RepositoryExecutor,
+  ModuleContext,
+  ViewContextOptions,
+  ListViewContextOptions,
+  ObjectViewContextOptions,
+  ViewContext,
+  ListViewContext,
+  ObjectViewContext,
+};

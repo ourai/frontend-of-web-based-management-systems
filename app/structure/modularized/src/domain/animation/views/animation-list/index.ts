@@ -16,6 +16,13 @@ export default createTableView(context, {
       config: { width: '60', align: 'center' },
     },
   ],
+  actions: [
+    { text: '新增', context: 'free', config: { primary: true } },
+    { text: '批量删除', context: 'batch', config: { danger: true } },
+    { text: '查看' },
+    { text: '编辑' },
+    { text: '删除', config: { danger: true } },
+  ],
   getList: 'getAllAnimationList',
   config: {
     hidePagination: true,

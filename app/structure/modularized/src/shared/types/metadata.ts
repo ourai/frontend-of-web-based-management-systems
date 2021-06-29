@@ -2,12 +2,30 @@ import { VueConstructor } from 'vue';
 
 import { CellRenderer, TableColumn } from './table';
 
+type Renderer = string | VueConstructor;
+
+type FieldConfig = Omit<TableColumn, 'prop' | 'label' | 'render' | 'isValid'>;
+
 type Field = {
   name: string;
   label?: string;
   required?: boolean;
-  render?: string | VueConstructor | CellRenderer<TableColumn>;
-  config?: Omit<TableColumn, 'prop' | 'label' | 'render' | 'isValid'>;
+  render?: Renderer | CellRenderer<TableColumn>;
+  config?: FieldConfig;
 };
 
-export { Field };
+type ActionConfig = {
+  primary?: boolean;
+  danger?: boolean;
+};
+
+type ActionContextType = 'free' | 'single' | 'batch' | 'both';
+
+type Action = {
+  context?: ActionContextType;
+  text?: string;
+  render?: Renderer;
+  config?: ActionConfig;
+};
+
+export { Field, ActionContextType, Action };

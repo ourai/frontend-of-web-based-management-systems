@@ -1,10 +1,13 @@
 import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
-import { Field } from '../types/metadata';
+import { ActionContextType, Action } from '../types/metadata';
 import {
   RepositoryExecutor,
   ModuleContext,
+  ViewContextOptions,
+  ListViewContextOptions,
+  ObjectViewContextOptions,
   ViewContext,
   ListViewContext,
   ObjectViewContext,
@@ -14,23 +17,6 @@ import { isFunction } from './is';
 import { capitalize } from './string';
 import { noop } from './function';
 import { getDependencies, getComponents } from './module';
-
-type ListViewContextOptions = {
-  fields: Field[];
-  getList: string;
-  deleteOne?: string;
-  deleteList?: string;
-  config?: {
-    hidePagination?: boolean;
-  };
-};
-
-type ObjectViewContextOptions = {
-  fields: Field[];
-  insert?: string;
-  update?: string;
-  config?: Record<string, any>;
-};
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;
@@ -105,7 +91,10 @@ function callVuexMethodWithNamespace(
   (vm as any).$store[methodName](`${namespace}/${type}`, payload);
 }
 
-function createViewContext<R>(moduleContext: ModuleContext<R>): ViewContext<R> {
+function createViewContext<R, CT>(
+  moduleContext: ModuleContext<R>,
+  options: ViewContextOptions<CT>,
+): ViewContext<R> {
   let _vm: Vue | undefined;
 
   const callVuexMethod = callVuexMethodWithNamespace.bind(
@@ -114,18 +103,37 @@ function createViewContext<R>(moduleContext: ModuleContext<R>): ViewContext<R> {
     moduleContext.getModuleName(),
   );
 
+  const actions = options.actions || [];
+  const actionContextGroups = {} as Record<ActionContextType, Action[]>;
+
+  actions.forEach(action => {
+    const contextType = action.context || 'single';
+
+    if (!actionContextGroups[contextType]) {
+      actionContextGroups[contextType] = [] as Action[];
+    }
+
+    actionContextGroups[contextType].push(action);
+  });
+
   return {
     execute: moduleContext.execute,
     getModuleName: moduleContext.getModuleName,
     getComponents: moduleContext.getComponents,
+    getFields: () => options.fields,
+    getActions: () => actions,
+    getActionsByContextType: (contextType: ActionContextType) => actionContextGroups[contextType],
+    getConfig: () => (options.config || {}) as CT,
     attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
   };
 }
 
-function createViewContextFactory<R>(moduleContext: ModuleContext<R>): () => ViewContext<R> {
-  return () => createViewContext(moduleContext);
+function createViewContextFactory<R>(
+  moduleContext: ModuleContext<R>,
+): (options: ViewContextOptions) => ViewContext<R> {
+  return (options: ViewContextOptions) => createViewContext(moduleContext, options);
 }
 
 function resolvePartialContext<
@@ -159,15 +167,13 @@ function createListViewContext<R>(
   options: ListViewContextOptions,
 ): ListViewContext<R> {
   return {
-    getFields: () => options.fields,
-    getConfig: () => options.config || {},
     ...resolvePartialContext<
       R,
       ListViewContextOptions,
       ListViewContext<R>,
       'getList' | 'deleteOne' | 'deleteList'
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
-    ...createViewContext(moduleContext),
+    ...createViewContext(moduleContext, options),
   };
 }
 
@@ -182,15 +188,13 @@ function createObjectViewContext<R>(
   options: ObjectViewContextOptions,
 ): ObjectViewContext<R> {
   return {
-    getFields: () => options.fields,
-    getConfig: () => options.config || {},
     ...resolvePartialContext<
       R,
       ObjectViewContextOptions,
       ObjectViewContext<R>,
       'insert' | 'update'
     >(moduleContext.execute, options, ['insert', 'update']),
-    ...createViewContext(moduleContext),
+    ...createViewContext(moduleContext, options),
   };
 }
 

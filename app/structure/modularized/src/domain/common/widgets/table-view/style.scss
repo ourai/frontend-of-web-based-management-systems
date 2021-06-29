@@ -1,0 +1,17 @@
+.TableView {
+  $table-actions-height: 40px;
+
+  height: 100%;
+
+  &-tableActions {
+    height: $table-actions-height;
+  }
+
+  &-tableActions + &-dataTable {
+    height: calc(100% - $table-actions-height);
+  }
+}
+
+.ActionRenderer + .ActionRenderer {
+  margin-left: 8px;
+}
