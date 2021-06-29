@@ -231,7 +231,9 @@ function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
   context: VC,
 ): ViewContextInAction<VC> {
   return omit(context, [
-    'getModuleName',
+    'fields',
+    'actions',
+    'config',
     'getComponents',
     'getActions',
     'getActionsByContextType',

@@ -14,15 +14,21 @@ const builtInActions = ([
     name: 'gotoEditFormView',
     context: 'single',
     text: '编辑',
-    execute: (context: ViewContext, vm) =>
-      vm.$router.push({ name: `${context.getModuleName()}EditForm`, params: { id: 'genius' } }),
+    execute: (context: ListViewContext, vm) =>
+      vm.$router.push({
+        name: `${context.getModuleName()}EditForm`,
+        params: { id: context.getValue()[0].id },
+      }),
   },
   {
     name: 'gotoDetailView',
     context: 'single',
     text: '查看',
-    execute: (context: ViewContext, vm) =>
-      vm.$router.push({ name: `${context.getModuleName()}Detail`, params: { id: 'genius' } }),
+    execute: (context: ListViewContext, vm) =>
+      vm.$router.push({
+        name: `${context.getModuleName()}Detail`,
+        params: { id: context.getValue()[0].id },
+      }),
   },
   {
     name: 'deleteOne',

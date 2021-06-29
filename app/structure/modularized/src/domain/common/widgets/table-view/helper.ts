@@ -57,8 +57,8 @@ function resolveTableColumns(context: ListViewContext): TableColumn[] {
   return cols;
 }
 
-function resolveTableProps(config: Record<string, any>): DataTableProps {
-  return omit(config, ['checkable']);
+function resolveTableProps(context: ListViewContext): DataTableProps {
+  return { ...omit(context.getConfig(), ['checkable']), columns: resolveTableColumns(context) };
 }
 
-export { resolveTableColumns, resolveTableProps };
+export { resolveTableProps };

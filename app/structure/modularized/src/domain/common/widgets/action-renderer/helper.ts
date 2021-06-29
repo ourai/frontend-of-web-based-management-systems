@@ -1,7 +1,7 @@
 import Vue, { VNodeData, VueConstructor } from 'vue';
 
 import { ActionRenderer, MixedActionRenderer, ActionDescriptor } from '@/types/metadata';
-import { ViewContext } from '@/types/context';
+import { ViewContext, ListViewContext } from '@/types/context';
 import { isString } from '@/utils/is';
 
 const DEFAULT_ACTION_RENDER_TYPE = 'button';
@@ -24,7 +24,7 @@ function getActionComponent(
 
 function resolveVirtualNodeData(
   action: ActionDescriptor,
-  viewContext: ViewContext<any>,
+  viewContext: ViewContext,
   vm: Vue,
 ): VNodeData {
   const nodeData: VNodeData = { staticClass: 'ActionRenderer' };
@@ -39,6 +39,10 @@ function resolveVirtualNodeData(
 
     if (action.danger) {
       props.color = 'danger';
+    }
+
+    if (action.context === 'batch') {
+      props.disabled = (viewContext as ListViewContext).getValue().length === 0;
     }
 
     nodeData.props = props;
