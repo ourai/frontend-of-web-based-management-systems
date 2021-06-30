@@ -1,7 +1,7 @@
 import { registerModules } from '@/utils/module';
 
-import common from './common';
 import session from './session';
+import common from './common';
 import animation from './animation';
 import comic from './comic';
 import game from './game';

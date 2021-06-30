@@ -1,4 +1,4 @@
-import Vue, { VueConstructor } from 'vue';
+import Vue from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../types';
 import { ActionContextType, ActionDescriptor } from '../types/metadata';
@@ -11,11 +11,11 @@ import {
   ViewContext,
   ListViewContext,
   ObjectViewContext,
+  KeptViewContextKeysInAction,
   ViewContextInAction,
 } from '../types/context';
 
 import { isFunction } from './is';
-import { capitalize } from './string';
 import { noop } from './function';
 import { omit } from './object';
 import { getDependencies, getComponents } from './module';
@@ -128,6 +128,7 @@ function createViewContext<R, CT>(
     getFields: () => options.fields,
     getActions: () => actions,
     getActionsByContextType: (contextType: ActionContextType) => actionContextGroups[contextType],
+    getActionsAuthority: () => options.actionsAuthority,
     getConfig: () => (options.config || {}) as CT,
     attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
@@ -214,57 +215,25 @@ function createObjectViewContextFactory<R>(
 function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
   context: VC,
 ): ViewContextInAction<VC> {
-  return omit(context, [
-    'fields',
-    'actions',
-    'config',
-    'getComponents',
-    'getActions',
-    'getActionsByContextType',
-    'getFields',
-    'getConfig',
-    'attach',
-  ]);
-}
+  const keptKeys: KeptViewContextKeysInAction[] = [
+    'getModuleName',
+    'execute',
+    'commit',
+    'dispatch',
+  ];
 
-function createTableView<R>(
-  context: ListViewContext<R> | ModuleContext<R>,
-  options?: ListViewContextOptions,
-): VueConstructor {
-  const resolved: ListViewContext<R> = options
-    ? createListViewContext(context as ModuleContext<R>, options)
-    : (context as ListViewContext<R>);
-
-  return Vue.extend({
-    name: `${capitalize(resolved.getModuleName())}List`,
-    components: resolved.getComponents(),
-    provide: { context: resolved },
-    render: h => h('TableView'),
-  });
-}
-
-function createFormView<R>(
-  context: ObjectViewContext<R> | ModuleContext<R>,
-  options?: ObjectViewContextOptions,
-): VueConstructor {
-  const resolved: ObjectViewContext<R> = options
-    ? createObjectViewContext(context as ModuleContext<R>, options)
-    : (context as ObjectViewContext<R>);
-
-  return Vue.extend({
-    name: `${capitalize(resolved.getModuleName())}Form`,
-    components: resolved.getComponents(),
-    provide: { context: resolved },
-    render: h => h('FormView'),
-  });
+  return omit(
+    context,
+    Object.keys(context).filter(key => keptKeys.indexOf(key as any) === -1),
+  );
 }
 
 export {
   createModuleContext,
   createViewContextFactory,
+  createListViewContext,
   createListViewContextFactory,
+  createObjectViewContext,
   createObjectViewContextFactory,
   resolveViewContextInAction,
-  createTableView,
-  createFormView,
 };

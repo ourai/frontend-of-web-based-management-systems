@@ -2,7 +2,13 @@ import { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
-import { TableViewConfig, FieldDescriptor, ActionContextType, ActionDescriptor } from './metadata';
+import {
+  FieldDescriptor,
+  ActionContextType,
+  ActionDescriptor,
+  TableViewConfig,
+  ViewDescriptor,
+} from './metadata';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,
@@ -31,11 +37,7 @@ type ModuleContext<Repository> = {
   execute: RepositoryExecutor<keyof Repository>;
 };
 
-type ViewContextOptions<ConfigType = Record<string, any>> = {
-  fields: FieldDescriptor[];
-  actions?: (ActionDescriptor | string)[];
-  config?: ConfigType;
-};
+type ViewContextOptions<ConfigType = Record<string, any>> = ViewDescriptor<ConfigType>;
 
 type ListViewContextOptions = ViewContextOptions<TableViewConfig> & {
   getList: string;
@@ -55,6 +57,7 @@ type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> 
   getFields: () => FieldDescriptor[];
   getActions: () => ActionDescriptor[];
   getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
+  getActionsAuthority: () => string | undefined;
   getConfig: () => Record<string, any>;
   attach: (vm: Vue) => void;
   commit: (type: string, payload?: any) => void;
@@ -74,9 +77,11 @@ type ObjectViewContext<Repository = any, ValueType = any> = ViewContext<Reposito
     getValue: <VT = ValueType>() => VT;
   };
 
+type KeptViewContextKeysInAction = 'getModuleName' | 'execute' | 'commit' | 'dispatch';
+
 type ViewContextInAction<VC = ViewContext> = Omit<
   VC,
-  keyof Omit<ViewContext, 'execute' | 'commit' | 'dispatch'>
+  keyof Omit<ViewContext, KeptViewContextKeysInAction>
 >;
 
 export {
@@ -88,5 +93,6 @@ export {
   ViewContext,
   ListViewContext,
   ObjectViewContext,
+  KeptViewContextKeysInAction,
   ViewContextInAction,
 };

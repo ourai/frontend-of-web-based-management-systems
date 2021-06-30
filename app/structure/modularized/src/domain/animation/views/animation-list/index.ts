@@ -1,4 +1,4 @@
-import { createTableView } from '@/utils/context';
+import { createTableView } from '@/utils/view';
 
 import context from '../../context';
 
@@ -17,11 +17,11 @@ export default createTableView(context, {
     },
   ],
   actions: [
-    { name: 'gotoCreateFormView', primary: true },
-    'deleteList',
+    { name: 'gotoCreateFormView', authority: 'animation:edit', primary: true },
+    { name: 'deleteList', authority: 'animation:edit' },
     'gotoDetailView',
-    'gotoEditFormView',
-    'deleteOne',
+    { name: 'gotoEditFormView', authority: 'animation:edit' },
+    { name: 'deleteOne', authority: 'animation:edit' },
   ],
   getList: 'getAllAnimationList',
   config: {

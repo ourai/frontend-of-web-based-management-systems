@@ -2,8 +2,6 @@ import Vue, { VueConstructor } from 'vue';
 
 import { CellRenderer, TableColumn } from './table';
 
-type TableViewConfig = { checkable?: boolean; hidePagination?: boolean };
-
 type FieldConfig = Omit<TableColumn, 'prop' | 'label' | 'render' | 'isValid'>;
 
 type FieldDescriptor = {
@@ -25,6 +23,7 @@ type MixedActionRenderer = ActionRenderer | VueConstructor;
 type ActionDescriptor = {
   name?: string;
   context?: ActionContextType;
+  authority?: string;
   text?: string;
   primary?: boolean;
   danger?: boolean;
@@ -34,11 +33,21 @@ type ActionDescriptor = {
   execute?: <ViewContext>(viewContext: ViewContext, vm: Vue) => Promise<any> | any;
 };
 
+type TableViewConfig = { checkable?: boolean; hidePagination?: boolean };
+
+type ViewDescriptor<ConfigType = Record<string, any>> = {
+  fields: FieldDescriptor[];
+  actions?: (ActionDescriptor | string)[];
+  actionsAuthority?: string;
+  config?: ConfigType;
+};
+
 export {
-  TableViewConfig,
   FieldDescriptor,
   ActionContextType,
   ActionRenderer,
   MixedActionRenderer,
   ActionDescriptor,
+  TableViewConfig,
+  ViewDescriptor,
 };

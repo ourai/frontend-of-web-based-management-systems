@@ -1,7 +1,7 @@
 import { VueConstructor, CreateElement } from 'vue';
 
 import { ColumnContext, CellRenderer, TableColumn } from '@/types/table';
-import { TableViewConfig } from '@/types/metadata';
+import { ActionDescriptor, TableViewConfig } from '@/types/metadata';
 import { ListViewContext } from '@/types/context';
 import { isFunction } from '@/utils/is';
 import { omit } from '@/utils/object';
@@ -23,7 +23,72 @@ function resolveCellRenderer(
   return (h: CreateElement) => h('div');
 }
 
-function resolveTableColumns(context: ListViewContext): TableColumn[] {
+function isActionsAuthorized(
+  actionsAuthority: string | undefined,
+  authority: Record<string, boolean> | null,
+): boolean {
+  if (!actionsAuthority) {
+    return true;
+  }
+
+  return authority ? !!authority[actionsAuthority] : false;
+}
+
+function resolveAuthorizedActions(
+  actions: ActionDescriptor[],
+  actionsAuthority: string | undefined,
+  authority: Record<string, boolean> | null,
+): ActionDescriptor[] {
+  if (actionsAuthority) {
+    return actions;
+  }
+
+  if (!authority) {
+    return [];
+  }
+
+  return actions.filter(({ authority: auth }) => !auth || !!authority[auth]);
+}
+
+function resolveOperationColumn(
+  context: ListViewContext,
+  authority: Record<string, boolean> | null,
+): TableColumn | null {
+  const actionsAuthority = context.getActionsAuthority();
+
+  const actions = resolveAuthorizedActions(
+    context.getActionsByContextType('single'),
+    actionsAuthority,
+    authority,
+  );
+
+  return isActionsAuthorized(actionsAuthority, authority) && actions.length > 0
+    ? {
+        label: '操作',
+        render: (h, { row }) => {
+          return h(
+            'div',
+            actions.map(action =>
+              h(ActionRenderer, {
+                props: {
+                  action,
+                  contextGetter: () => ({
+                    ...resolveViewContextInAction(context),
+                    getValue: () => [row],
+                  }),
+                },
+              }),
+            ),
+          );
+        },
+      }
+    : null;
+}
+
+function resolveTableColumns(
+  context: ListViewContext,
+  authority: Record<string, boolean> | null,
+): TableColumn[] {
   const cols: TableColumn[] = context.getFields().map(({ name, label, render, config = {} }) => ({
     prop: name,
     label,
@@ -31,34 +96,38 @@ function resolveTableColumns(context: ListViewContext): TableColumn[] {
     ...config,
   }));
 
-  if ((context.getConfig() as TableViewConfig).checkable) {
+  const checkableActions = isActionsAuthorized(context.getActionsAuthority(), authority)
+    ? resolveAuthorizedActions(
+        ([] as ActionDescriptor[]).concat(
+          context.getActionsByContextType('batch') || [],
+          context.getActionsByContextType('both') || [],
+        ),
+        context.getActionsAuthority(),
+        authority,
+      )
+    : [];
+
+  if ((context.getConfig() as TableViewConfig).checkable && checkableActions.length > 0) {
     cols.unshift({ type: 'selection', width: '55', align: 'center' });
   }
 
-  cols.push({
-    label: '操作',
-    render: (h, { row }) =>
-      h(
-        'div',
-        context.getActionsByContextType('single').map(action =>
-          h(ActionRenderer, {
-            props: {
-              action,
-              contextGetter: () => ({
-                ...resolveViewContextInAction(context),
-                getValue: () => [row],
-              }),
-            },
-          }),
-        ),
-      ),
-  });
+  const operationCol = resolveOperationColumn(context, authority);
+
+  if (operationCol) {
+    cols.push(operationCol);
+  }
 
   return cols;
 }
 
-function resolveTableProps(context: ListViewContext): DataTableProps {
-  return { ...omit(context.getConfig(), ['checkable']), columns: resolveTableColumns(context) };
+function resolveTableProps(
+  context: ListViewContext,
+  authority: Record<string, boolean> | null,
+): DataTableProps {
+  return {
+    ...omit(context.getConfig(), ['checkable']),
+    columns: resolveTableColumns(context, authority),
+  };
 }
 
-export { resolveTableProps };
+export { isActionsAuthorized, resolveAuthorizedActions, resolveTableProps };

@@ -26,7 +26,7 @@ import { resolveViewContextInAction } from '@/utils/context';
 import { getComponents } from '../../context';
 import ActionRenderer from '../action-renderer';
 import { DataTableProps } from './typing';
-import { resolveTableProps } from './helper';
+import { isActionsAuthorized, resolveAuthorizedActions, resolveTableProps } from './helper';
 
 const components = getComponents();
 
@@ -43,8 +43,18 @@ export default class TableView extends Vue {
 
   private tableProps: DataTableProps = {} as any;
 
+  private get accessible() {
+    return this.$store.state.session.authority.accessible;
+  }
+
   private get topActions() {
-    return this.context.getActions().filter(({ context }) => context && context !== 'single');
+    return isActionsAuthorized(this.context.getActionsAuthority(), this.accessible)
+      ? resolveAuthorizedActions(
+          this.context.getActions().filter(({ context }) => context && context !== 'single'),
+          this.context.getActionsAuthority(),
+          this.accessible,
+        )
+      : [];
   }
 
   private get contextGetter() {
@@ -58,7 +68,7 @@ export default class TableView extends Vue {
   private created(): void {
     const ctx = this.context;
 
-    this.tableProps = resolveTableProps(ctx);
+    this.tableProps = resolveTableProps(ctx, this.accessible);
 
     ctx.getList({}, data => (this.dataSource = data));
   }
