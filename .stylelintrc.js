@@ -38,7 +38,7 @@ const SELF_CONTROL_FLEX_PROPS = [
   "flex",
   "flex-grow",
   "flex-shrink",
-  "flex-basic",
+  "flex-basis",
   "place-self",
   "align-self",
   "justify-self"

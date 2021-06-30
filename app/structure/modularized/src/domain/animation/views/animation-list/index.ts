@@ -25,9 +25,6 @@ export default createTableView(context, {
     { name: 'gotoEditFormView', authority: 'animation:edit' },
     { name: 'deleteOne', authority: 'animation:edit' },
   ],
-  getList: 'getAllAnimationList',
-  config: {
-    checkable: true,
-    hidePagination: true,
-  },
+  getList: 'getAnimationList',
+  config: { checkable: true },
 });

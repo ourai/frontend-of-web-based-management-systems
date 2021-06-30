@@ -14,8 +14,13 @@
     <data-table
       class="TableView-dataTable"
       :data="dataSource"
+      :current-page="pageNum"
+      :page-size="pageSize"
+      :total="total"
       v-bind="tableProps"
       @selection-change="handleSelectionChange"
+      @current-change="handlePageNumChange"
+      @size-change="handlePageSizeChange"
     />
   </div>
 </template>
@@ -23,6 +28,7 @@
 <script lang="ts">
 import { Vue, Component, Inject } from 'vue-property-decorator';
 
+import { Pagination } from '@/types/http';
 import { ListViewContext } from '@/types/context';
 import { resolveViewContextInAction } from '@/utils/context';
 
@@ -48,6 +54,14 @@ export default class TableView extends Vue {
 
   private tableProps: DataTableProps = {} as any;
 
+  private pageNum: number = 1;
+
+  private pageSize: number = 20;
+
+  private total: number = 0;
+
+  private busy: boolean = false;
+
   private get searchable() {
     return !!this.context.getSearch();
   }
@@ -70,16 +84,37 @@ export default class TableView extends Vue {
     return () => ({ ...resolveViewContextInAction(this.context), getValue: () => this.selected });
   }
 
-  private handleSelectionChange(selected: any[]): void {
+  private fetchDataSource(
+    pagination: Pagination = { pageNum: this.pageNum, pageSize: this.pageSize },
+  ) {
+    this.busy = true;
+
+    this.context
+      .getList(pagination, (data, { pageNum, pageSize, total }) => {
+        this.dataSource = data;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.total = total;
+      })
+      .finally(() => (this.busy = false));
+  }
+
+  private handleSelectionChange(selected: any[]) {
     this.selected = selected;
   }
 
+  private handlePageNumChange(pageNum: number) {
+    this.fetchDataSource({ pageNum, pageSize: this.pageSize });
+  }
+
+  private handlePageSizeChange(pageSize: number) {
+    this.fetchDataSource({ pageNum: this.pageNum, pageSize });
+  }
+
   private created(): void {
-    const ctx = this.context;
+    this.tableProps = resolveTableProps(this.context, this.accessible);
 
-    this.tableProps = resolveTableProps(ctx, this.accessible);
-
-    ctx.getList({}, data => (this.dataSource = data));
+    this.fetchDataSource();
   }
 }
 </script>

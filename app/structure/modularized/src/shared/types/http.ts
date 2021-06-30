@@ -21,4 +21,4 @@ type ResponseResult<DataType = any> = {
 type ResponseSuccess<T = any> = (data: T, extra: ResponseExtra, result: ResponseResult<T>) => any;
 type ResponseFail<T = any> = (message: string, result: ResponseResult<T>) => any;
 
-export { RequestParams, ResponseExtra, ResponseResult, ResponseSuccess, ResponseFail };
+export { RequestParams, Pagination, ResponseExtra, ResponseResult, ResponseSuccess, ResponseFail };

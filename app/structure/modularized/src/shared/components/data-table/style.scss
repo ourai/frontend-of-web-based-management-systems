@@ -1,5 +1,8 @@
 .DataTable {
+  $pagination-height: 68px;
+
   display: flex;
+  flex-direction: column;
   height: 100%;
 
   &-tableWrapper {
@@ -11,7 +14,9 @@
   }
 
   &-paginationWrapper {
-    height: 68px;
+    flex-shrink: 0;
+    flex-basis: $pagination-height;
+    height: $pagination-height;
     padding: 19px 20px 0;
   }
 }
