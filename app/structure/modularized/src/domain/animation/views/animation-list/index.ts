@@ -7,7 +7,6 @@ import TitleField from './TitleField.vue';
 import EpisodesField from './EpisodesField.vue';
 
 export default createTableView(context, {
-  search: Search,
   fields: [
     { name: 'title', label: '标题', render: TitleField, config: { width: '300' } },
     { name: 'description', label: '简介' },
@@ -25,7 +24,8 @@ export default createTableView(context, {
     { name: 'gotoEditFormView', authority: 'animation:edit' },
     { name: 'deleteOne', authority: 'animation:edit' },
   ],
-  config: { checkable: true },
+  search: Search,
+  config: { checkable: true, operationColumnWidth: 250 },
   getList: 'getAnimationList',
   deleteOne: 'deleteAnimationBy',
   deleteList: 'deleteAnimationListBy',

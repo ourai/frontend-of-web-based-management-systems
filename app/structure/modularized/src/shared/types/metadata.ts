@@ -39,7 +39,11 @@ type SearchDescriptor = {
   filters: FilterDescriptor[];
 };
 
-type TableViewConfig = { checkable?: boolean; hidePagination?: boolean };
+type TableViewConfig = {
+  checkable?: boolean;
+  operationColumnWidth?: number | string;
+  hidePagination?: boolean;
+};
 
 type ViewDescriptor<ConfigType = Record<string, any>> = {
   search?: SearchDescriptor | VueConstructor;

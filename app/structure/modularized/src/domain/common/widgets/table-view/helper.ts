@@ -3,7 +3,7 @@ import { VueConstructor, CreateElement } from 'vue';
 import { ColumnContext, CellRenderer, TableColumn } from '@/types/table';
 import { ActionDescriptor, TableViewConfig } from '@/types/metadata';
 import { ListViewContext } from '@/types/context';
-import { isFunction } from '@/utils/is';
+import { isNumber, isFunction } from '@/utils/is';
 import { omit } from '@/utils/object';
 import { resolveViewContextInAction } from '@/utils/context';
 
@@ -62,27 +62,34 @@ function resolveOperationColumn(
     authority,
   );
 
-  return isActionsAuthorized(actionsAuthority, authority) && actions.length > 0
-    ? {
-        label: '操作',
-        render: (h, { row }) => {
-          return h(
-            'div',
-            actions.map(action =>
-              h(ActionRenderer, {
-                props: {
-                  action,
-                  contextGetter: () => ({
-                    ...resolveViewContextInAction(context),
-                    getValue: () => [row],
-                  }),
-                },
+  const col: TableColumn = {
+    label: '操作',
+    render: (h, { row }) => {
+      return h(
+        'div',
+        actions.map(action =>
+          h(ActionRenderer, {
+            props: {
+              action,
+              contextGetter: () => ({
+                ...resolveViewContextInAction(context),
+                getValue: () => [row],
               }),
-            ),
-          );
-        },
-      }
-    : null;
+            },
+          }),
+        ),
+      );
+    },
+  };
+  const { operationColumnWidth } = context.getConfig() as TableViewConfig;
+
+  if (operationColumnWidth) {
+    col.width = isNumber(operationColumnWidth)
+      ? `${operationColumnWidth}px`
+      : (operationColumnWidth as string);
+  }
+
+  return isActionsAuthorized(actionsAuthority, authority) && actions.length > 0 ? col : null;
 }
 
 function resolveTableColumns(
