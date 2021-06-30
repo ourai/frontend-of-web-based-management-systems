@@ -1,9 +1,12 @@
 <template>
   <div class="TableView">
+    <div class="TableView-search" v-if="searchable">
+      <search-renderer />
+    </div>
     <div class="TableView-tableActions" v-if="topActions.length > 0">
       <action-renderer
         :action="action"
-        :context-getter="contextGetter"
+        :context-getter="contextInActionGetter"
         :key="action.text"
         v-for="action in topActions"
       />
@@ -24,12 +27,14 @@ import { ListViewContext } from '@/types/context';
 import { resolveViewContextInAction } from '@/utils/context';
 
 import { getComponents } from '../../context';
+import SearchRenderer from '../search-renderer';
 import ActionRenderer from '../action-renderer';
 import { DataTableProps } from './typing';
 import { isActionsAuthorized, resolveAuthorizedActions, resolveTableProps } from './helper';
 
 const components = getComponents();
 
+components.SearchRenderer = SearchRenderer;
 components.ActionRenderer = ActionRenderer;
 
 @Component({ components })
@@ -42,6 +47,10 @@ export default class TableView extends Vue {
   private selected: any[] = [];
 
   private tableProps: DataTableProps = {} as any;
+
+  private get searchable() {
+    return !!this.context.getSearch();
+  }
 
   private get accessible() {
     return this.$store.state.session.authority.accessible;
@@ -57,7 +66,7 @@ export default class TableView extends Vue {
       : [];
   }
 
-  private get contextGetter() {
+  private get contextInActionGetter() {
     return () => ({ ...resolveViewContextInAction(this.context), getValue: () => this.selected });
   }
 

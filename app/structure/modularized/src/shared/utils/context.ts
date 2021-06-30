@@ -125,6 +125,7 @@ function createViewContext<R, CT>(
     execute: moduleContext.execute,
     getModuleName: moduleContext.getModuleName,
     getComponents: moduleContext.getComponents,
+    getSearch: () => options.search,
     getFields: () => options.fields,
     getActions: () => actions,
     getActionsByContextType: (contextType: ActionContextType) => actionContextGroups[contextType],

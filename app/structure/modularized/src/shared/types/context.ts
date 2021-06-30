@@ -6,6 +6,7 @@ import {
   FieldDescriptor,
   ActionContextType,
   ActionDescriptor,
+  SearchDescriptor,
   TableViewConfig,
   ViewDescriptor,
 } from './metadata';
@@ -54,6 +55,7 @@ type ObjectViewContextOptions = ViewContextOptions & {
 type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> & {
   getModuleName: () => string;
   getComponents: () => Record<string, VueConstructor>;
+  getSearch: () => SearchDescriptor | VueConstructor | undefined;
   getFields: () => FieldDescriptor[];
   getActions: () => ActionDescriptor[];
   getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];

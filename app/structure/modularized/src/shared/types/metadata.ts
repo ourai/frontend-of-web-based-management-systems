@@ -33,9 +33,16 @@ type ActionDescriptor = {
   execute?: <ViewContext>(viewContext: ViewContext, vm: Vue) => Promise<any> | any;
 };
 
+type FilterDescriptor = Pick<FieldDescriptor, 'name' | 'label'>;
+
+type SearchDescriptor = {
+  filters: FilterDescriptor[];
+};
+
 type TableViewConfig = { checkable?: boolean; hidePagination?: boolean };
 
 type ViewDescriptor<ConfigType = Record<string, any>> = {
+  search?: SearchDescriptor | VueConstructor;
   fields: FieldDescriptor[];
   actions?: (ActionDescriptor | string)[];
   actionsAuthority?: string;
@@ -48,6 +55,7 @@ export {
   ActionRenderer,
   MixedActionRenderer,
   ActionDescriptor,
+  SearchDescriptor,
   TableViewConfig,
   ViewDescriptor,
 };
