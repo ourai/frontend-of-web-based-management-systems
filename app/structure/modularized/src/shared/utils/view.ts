@@ -12,7 +12,7 @@ import { createListViewContext, createObjectViewContext } from './context';
 
 function createTableView<R>(
   context: ListViewContext<R> | ModuleContext<R>,
-  options?: ListViewContextOptions,
+  options?: ListViewContextOptions<R>,
 ): VueConstructor {
   const resolved: ListViewContext<R> = options
     ? createListViewContext(context as ModuleContext<R>, options)
@@ -30,7 +30,7 @@ function createObjectView<R>(
   context: ObjectViewContext<R> | ModuleContext<R>,
   viewName: string,
   componentName: string,
-  options?: ObjectViewContextOptions,
+  options?: ObjectViewContextOptions<R>,
 ): VueConstructor {
   const resolved: ObjectViewContext<R> = options
     ? createObjectViewContext(context as ModuleContext<R>, options)
@@ -46,7 +46,7 @@ function createObjectView<R>(
 
 function createDetailView<R>(
   context: ObjectViewContext<R> | ModuleContext<R>,
-  options?: ObjectViewContextOptions,
+  options?: ObjectViewContextOptions<R>,
 ): VueConstructor {
   return createObjectView(
     context,
@@ -58,7 +58,7 @@ function createDetailView<R>(
 
 function createFormView<R>(
   context: ObjectViewContext<R> | ModuleContext<R>,
-  options?: ObjectViewContextOptions,
+  options?: ObjectViewContextOptions<R>,
 ): VueConstructor {
   return createObjectView(
     context,

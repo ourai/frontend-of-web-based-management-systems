@@ -84,9 +84,9 @@ export default class TableView extends Vue {
     return () => ({ ...resolveViewContextInAction(this.context), getValue: () => this.selected });
   }
 
-  private fetchDataSource(
+  public fetchDataSource(
     pagination: Pagination = { pageNum: this.pageNum, pageSize: this.pageSize },
-  ) {
+  ): void {
     this.busy = true;
 
     this.context
@@ -114,6 +114,7 @@ export default class TableView extends Vue {
   private created(): void {
     this.tableProps = resolveTableProps(this.context, this.accessible);
 
+    this.context.attach(this);
     this.fetchDataSource();
   }
 }

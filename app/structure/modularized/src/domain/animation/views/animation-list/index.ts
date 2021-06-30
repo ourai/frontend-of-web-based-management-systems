@@ -25,6 +25,9 @@ export default createTableView(context, {
     { name: 'gotoEditFormView', authority: 'animation:edit' },
     { name: 'deleteOne', authority: 'animation:edit' },
   ],
-  getList: 'getAnimationList',
   config: { checkable: true },
+  getList: 'getAnimationList',
+  deleteOne: 'deleteAnimationBy',
+  deleteList: 'deleteAnimationListBy',
+  refresh: ctx => (ctx.getView() as any).fetchDataSource(),
 });

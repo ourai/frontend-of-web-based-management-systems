@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 import { ActionDescriptor } from '../types/metadata';
 import { ViewContext, ListViewContext } from '../types/context';
 import { isString } from './is';
@@ -35,21 +37,20 @@ const builtInActions = ([
     context: 'single',
     text: '删除',
     danger: true,
-    execute: (context: ListViewContext) => {
-      if (!context.deleteOne) {
-        return;
-      }
-
-      context.deleteOne(context.getValue()[0]);
-    },
+    execute: (context: ListViewContext, vm: Vue) =>
+      context.deleteOne &&
+      context.deleteOne(context.getValue()[0]).then(() => {
+        context.refresh(context, vm);
+      }),
   },
   {
     name: 'deleteList',
     context: 'batch',
     text: '批量删除',
     danger: true,
-    execute: (context: ListViewContext) =>
-      context.deleteList && context.deleteList(context.getValue()),
+    execute: (context: ListViewContext, vm: Vue) =>
+      context.deleteList &&
+      context.deleteList(context.getValue()).then(() => context.refresh(context, vm)),
   },
 ] as ActionDescriptor[]).reduce((prev, action) => ({ ...prev, [action.name!]: action }), {});
 

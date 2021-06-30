@@ -1,4 +1,4 @@
-import { VueConstructor } from 'vue';
+import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
@@ -38,20 +38,6 @@ type ModuleContext<Repository> = {
   execute: RepositoryExecutor<keyof Repository>;
 };
 
-type ViewContextOptions<ConfigType = Record<string, any>> = ViewDescriptor<ConfigType>;
-
-type ListViewContextOptions = ViewContextOptions<TableViewConfig> & {
-  getList: string;
-  deleteOne?: string;
-  deleteList?: string;
-};
-
-type ObjectViewContextOptions = ViewContextOptions & {
-  insert?: string;
-  update?: string;
-  getOne?: string;
-};
-
 type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> & {
   getModuleName: () => string;
   getComponents: () => Record<string, VueConstructor>;
@@ -62,8 +48,10 @@ type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> 
   getActionsAuthority: () => string | undefined;
   getConfig: () => Record<string, any>;
   attach: (vm: Vue) => void;
+  getView: () => Vue | undefined;
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
+  refresh: (context: ViewContext<Repository>, vm: Vue) => Promise<any> | any;
 };
 
 type ListViewContext<Repository = any, ValueType = any> = ViewContext<Repository> & {
@@ -79,7 +67,32 @@ type ObjectViewContext<Repository = any, ValueType = any> = ViewContext<Reposito
     getValue: <VT = ValueType>() => VT;
   };
 
-type KeptViewContextKeysInAction = 'getModuleName' | 'execute' | 'commit' | 'dispatch';
+type ViewContextOptions<R = any, ConfigType = Record<string, any>> = ViewDescriptor<ConfigType> & {
+  refresh?: (context: ViewContext<R>, vm: Vue) => Promise<any> | any;
+};
+
+type ListViewContextOptions<R = any> = ViewContextOptions<R, TableViewConfig> & {
+  getList: string;
+  deleteOne?: string;
+  deleteList?: string;
+};
+
+type ObjectViewContextOptions<R = any> = ViewContextOptions<R> & {
+  insert?: string;
+  update?: string;
+  getOne?: string;
+};
+
+type KeptViewContextKeysInAction =
+  | 'getModuleName'
+  | 'getView'
+  | 'execute'
+  | 'commit'
+  | 'dispatch'
+  | 'refresh'
+  | 'getList'
+  | 'deleteOne'
+  | 'deleteList';
 
 type ViewContextInAction<VC = ViewContext> = Omit<
   VC,

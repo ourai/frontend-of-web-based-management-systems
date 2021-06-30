@@ -96,7 +96,7 @@ function callVuexMethodWithNamespace(
 
 function createViewContext<R, CT>(
   moduleContext: ModuleContext<R>,
-  options: ViewContextOptions<CT>,
+  options: ViewContextOptions<R, CT>,
 ): ViewContext<R> {
   let _vm: Vue | undefined;
 
@@ -132,15 +132,17 @@ function createViewContext<R, CT>(
     getActionsAuthority: () => options.actionsAuthority,
     getConfig: () => (options.config || {}) as CT,
     attach: (vm: Vue) => (_vm = vm),
+    getView: () => _vm,
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
+    refresh: options.refresh || noop,
   };
 }
 
 function createViewContextFactory<R>(
   moduleContext: ModuleContext<R>,
-): (options: ViewContextOptions) => ViewContext<R> {
-  return (options: ViewContextOptions) => createViewContext(moduleContext, options);
+): (options: ViewContextOptions<R>) => ViewContext<R> {
+  return (options: ViewContextOptions<R>) => createViewContext(moduleContext, options);
 }
 
 function resolvePartialContext<
@@ -171,12 +173,12 @@ function resolvePartialContext<
 
 function createListViewContext<R>(
   moduleContext: ModuleContext<R>,
-  options: ListViewContextOptions,
+  options: ListViewContextOptions<R>,
 ): ListViewContext<R> {
   return {
     ...resolvePartialContext<
       R,
-      ListViewContextOptions,
+      ListViewContextOptions<R>,
       ListViewContext<R>,
       'getList' | 'deleteOne' | 'deleteList'
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
@@ -187,18 +189,18 @@ function createListViewContext<R>(
 
 function createListViewContextFactory<R>(
   moduleContext: ModuleContext<R>,
-): (options: ListViewContextOptions) => ListViewContext<R> {
-  return (options: ListViewContextOptions) => createListViewContext(moduleContext, options);
+): (options: ListViewContextOptions<R>) => ListViewContext<R> {
+  return (options: ListViewContextOptions<R>) => createListViewContext(moduleContext, options);
 }
 
 function createObjectViewContext<R>(
   moduleContext: ModuleContext<R>,
-  options: ObjectViewContextOptions,
+  options: ObjectViewContextOptions<R>,
 ): ObjectViewContext<R> {
   return {
     ...resolvePartialContext<
       R,
-      ObjectViewContextOptions,
+      ObjectViewContextOptions<R>,
       ObjectViewContext<R>,
       'insert' | 'update' | 'getOne'
     >(moduleContext.execute, options, ['insert', 'update', 'getOne']),
@@ -209,8 +211,8 @@ function createObjectViewContext<R>(
 
 function createObjectViewContextFactory<R>(
   moduleContext: ModuleContext<R>,
-): (options: ObjectViewContextOptions) => ObjectViewContext<R> {
-  return (options: ObjectViewContextOptions) => createObjectViewContext(moduleContext, options);
+): (options: ObjectViewContextOptions<R>) => ObjectViewContext<R> {
+  return (options: ObjectViewContextOptions<R>) => createObjectViewContext(moduleContext, options);
 }
 
 function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
@@ -218,9 +220,14 @@ function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
 ): ViewContextInAction<VC> {
   const keptKeys: KeptViewContextKeysInAction[] = [
     'getModuleName',
+    'getView',
     'execute',
     'commit',
     'dispatch',
+    'refresh',
+    'getList',
+    'deleteOne',
+    'deleteList',
   ];
 
   return omit(

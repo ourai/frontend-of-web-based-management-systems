@@ -27,4 +27,38 @@ module.exports = {
           }),
         );
   },
+  'DELETE /api/animations': (req, res) => {
+    const ids = (req.query.ids || '').split(',');
+    const deleted = [];
+    const indexes = [];
+
+    for (let i = 0, j = animations.length; ids.length > 0 && i < j; i++) {
+      const anime = animations[i];
+      const idIndex = ids.indexOf(anime.id);
+
+      if (idIndex > -1) {
+        indexes.push(i);
+        deleted.push(anime);
+        ids.splice(idIndex, 1);
+      }
+    }
+
+    indexes.reverse().forEach(idx => animations.splice(idx, 1));
+
+    return res.json(resolveResult(deleted));
+  },
+  'DELETE /api/animations/:id': (req, res) => {
+    const { id } = req.params;
+    const index = animations.findIndex(({ id: animeId }) => animeId === id);
+
+    return index > -1
+      ? res.json(resolveResult(animations.splice(index, 1)[0]))
+      : res.json(
+          resolveResult(undefined, {
+            success: false,
+            code: '404',
+            message: `动画 \`${id}\` 不存在`,
+          }),
+        );
+  },
 };
