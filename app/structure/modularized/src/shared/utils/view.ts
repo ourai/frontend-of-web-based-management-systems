@@ -26,8 +26,10 @@ function createTableView<R>(
   });
 }
 
-function createFormView<R>(
+function createObjectView<R>(
   context: ObjectViewContext<R> | ModuleContext<R>,
+  viewName: string,
+  componentName: string,
   options?: ObjectViewContextOptions,
 ): VueConstructor {
   const resolved: ObjectViewContext<R> = options
@@ -35,11 +37,35 @@ function createFormView<R>(
     : (context as ObjectViewContext<R>);
 
   return Vue.extend({
-    name: `${capitalize(resolved.getModuleName())}Form`,
+    name: viewName,
     components: resolved.getComponents(),
     provide: { context: resolved },
-    render: h => h('FormView'),
+    render: h => h(componentName),
   });
 }
 
-export { createTableView, createFormView };
+function createDetailView<R>(
+  context: ObjectViewContext<R> | ModuleContext<R>,
+  options?: ObjectViewContextOptions,
+): VueConstructor {
+  return createObjectView(
+    context,
+    `${capitalize(context.getModuleName())}Detail`,
+    'DetailView',
+    options,
+  );
+}
+
+function createFormView<R>(
+  context: ObjectViewContext<R> | ModuleContext<R>,
+  options?: ObjectViewContextOptions,
+): VueConstructor {
+  return createObjectView(
+    context,
+    `${capitalize(context.getModuleName())}Form`,
+    'FormView',
+    options,
+  );
+}
+
+export { createTableView, createDetailView, createFormView };

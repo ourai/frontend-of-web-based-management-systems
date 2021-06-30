@@ -1,4 +1,5 @@
 import TableView from './table-view';
+import DetailView from './detail-view';
 import FormView from './form-view';
 
-export { TableView, FormView };
+export { TableView, DetailView, FormView };

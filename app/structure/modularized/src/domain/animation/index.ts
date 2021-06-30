@@ -5,7 +5,7 @@ import TestWidget from './widgets/test-widget';
 
 export default {
   name: MODULE_NAME,
-  imports: ['common.widgets.TableView', 'common.widgets.FormView'],
+  imports: ['common.widgets.TableView', 'common.widgets.DetailView', 'common.widgets.FormView'],
   exports: {
     utils: { test: testUtil },
     widgets: { test: TestWidget },
@@ -13,6 +13,7 @@ export default {
   components: {
     OlButton: true,
     TableView: 'common.widgets.TableView',
+    DetailView: 'common.widgets.DetailView',
     FormView: 'common.widgets.FormView',
   },
 } as ModuleDescriptor;

@@ -1,6 +1,6 @@
 import { RouteConfig } from '@/types';
 
-import { AnimationList, AnimationForm } from '../../domain/animation/views';
+import { AnimationList, AnimationDetail, AnimationForm } from '../../domain/animation/views';
 import { ComicList } from '../../domain/comic/views';
 import { GameList } from '../../domain/game/views';
 import { NovelList } from '../../domain/novel/views';
@@ -19,6 +19,12 @@ export default {
       path: 'animations',
       component: AnimationList,
       meta: { text: '动画', auth: 'animation:read' },
+    },
+    {
+      name: 'animationDetail',
+      path: 'animations/:id',
+      component: AnimationDetail,
+      meta: { text: '动画详情', auth: 'animation:read', show: false },
     },
     {
       name: 'animationNewForm',
