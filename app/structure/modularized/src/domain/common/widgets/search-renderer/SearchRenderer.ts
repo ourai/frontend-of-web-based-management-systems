@@ -1,7 +1,7 @@
 import { VueConstructor, CreateElement, VNode } from 'vue';
 import { Vue, Component, Inject } from 'vue-property-decorator';
+import { ViewContext } from 'handie-vue';
 
-import { ViewContext } from '@/types/context';
 import { isFunction } from '@/utils/is';
 
 @Component({

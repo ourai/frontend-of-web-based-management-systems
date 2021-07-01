@@ -1,11 +1,16 @@
 import { VueConstructor, CreateElement } from 'vue';
+import {
+  ColumnContext,
+  CellRenderer,
+  TableColumn,
+  ActionDescriptor,
+  TableViewConfig,
+  ListViewContext,
+  omit,
+  resolveViewContextInAction,
+} from 'handie-vue';
 
-import { ColumnContext, CellRenderer, TableColumn } from '@/types/table';
-import { ActionDescriptor, TableViewConfig } from '@/types/metadata';
-import { ListViewContext } from '@/types/context';
 import { isNumber, isFunction } from '@/utils/is';
-import { omit } from '@/utils/object';
-import { resolveViewContextInAction } from '@/utils/context';
 
 import ActionRenderer from '../action-renderer';
 import { DataTableProps } from './typing';

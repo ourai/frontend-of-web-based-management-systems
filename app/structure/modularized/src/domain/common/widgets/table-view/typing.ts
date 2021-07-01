@@ -1,4 +1,4 @@
-import { TableColumn } from '@/types/table';
+import { TableColumn } from 'handie-vue';
 
 type DataTableProps = { columns: TableColumn[]; hidePagination?: boolean };
 

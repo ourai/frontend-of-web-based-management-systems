@@ -27,10 +27,7 @@
 
 <script lang="ts">
 import { Vue, Component, Inject } from 'vue-property-decorator';
-
-import { Pagination } from '@/types/http';
-import { ListViewContext } from '@/types/context';
-import { resolveViewContextInAction } from '@/utils/context';
+import { Pagination, ListViewContext, resolveViewContextInAction } from 'handie-vue';
 
 import { getComponents } from '../../context';
 import SearchRenderer from '../search-renderer';

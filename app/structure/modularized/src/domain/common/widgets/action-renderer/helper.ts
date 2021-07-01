@@ -1,10 +1,15 @@
 import Vue, { VNodeData, VueConstructor } from 'vue';
 import { MessageBox } from 'element-ui';
+import {
+  ActionRenderer,
+  MixedActionRenderer,
+  ActionDescriptor,
+  ViewContext,
+  ListViewContext,
+  noop,
+} from 'handie-vue';
 
-import { ActionRenderer, MixedActionRenderer, ActionDescriptor } from '@/types/metadata';
-import { ViewContext, ListViewContext } from '@/types/context';
 import { isString } from '@/utils/is';
-import { noop } from '@/utils/function';
 
 const DEFAULT_ACTION_RENDER_TYPE = 'button';
 

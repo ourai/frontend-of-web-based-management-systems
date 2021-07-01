@@ -1,4 +1,4 @@
-import { getComponents as _getComponents } from '@/utils/module';
+import { getComponents as _getComponents } from 'handie-vue';
 
 import { MODULE_NAME } from './helper';
 

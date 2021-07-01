@@ -11,8 +11,7 @@
 <script lang="ts">
 import { Vue, Component, Inject } from 'vue-property-decorator';
 import { Form as ElForm, FormItem as ElFormItem } from 'element-ui';
-
-import { ObjectViewContext } from '@/types/context';
+import { ObjectViewContext } from 'handie-vue';
 
 import { getComponents } from '../../context';
 

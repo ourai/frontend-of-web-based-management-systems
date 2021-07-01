@@ -1,7 +1,7 @@
 import { ActionHandler } from 'vuex';
+import { noop } from 'handie-vue';
 
 import { isArray } from '@/utils/is';
-import { noop } from '@/utils/function';
 
 import { UserInfo, UserPermission, UserAndPermissions } from './typing';
 import { MODULE_NAME } from './helper';

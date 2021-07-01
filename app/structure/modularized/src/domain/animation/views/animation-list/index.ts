@@ -1,4 +1,4 @@
-import { createTableView } from '@/utils/view';
+import { createTableView } from 'handie-vue';
 
 import context from '../../context';
 

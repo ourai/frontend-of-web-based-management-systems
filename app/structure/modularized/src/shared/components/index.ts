@@ -1,4 +1,4 @@
-import { registerComponent } from '../utils/component';
+import { registerComponent } from 'handie-vue';
 
 import Button from './button';
 import DataTable from './data-table';

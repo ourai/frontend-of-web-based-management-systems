@@ -1,4 +1,4 @@
-import { createFormView } from '@/utils/view';
+import { createFormView } from 'handie-vue';
 
 import context from '../../context';
 

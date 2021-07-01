@@ -1,8 +1,6 @@
 import { CreateElement, VNode } from 'vue';
 import { Vue, Component, Prop } from 'vue-property-decorator';
-
-import { ActionDescriptor } from '@/types/metadata';
-import { ViewContext } from '@/types/context';
+import { ActionDescriptor, ViewContext } from 'handie-vue';
 
 import { getComponents } from '../../context';
 import { getActionComponent, resolveVirtualNodeData } from './helper';

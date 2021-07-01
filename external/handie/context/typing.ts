@@ -1,7 +1,7 @@
 import Vue, { VueConstructor } from 'vue';
 
-import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
-import { ModuleDependencies, ModuleResources } from './module';
+import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../http';
+import { ModuleDependencies, ModuleResources } from '../module';
 import {
   FieldDescriptor,
   ActionContextType,
@@ -9,7 +9,7 @@ import {
   SearchDescriptor,
   TableViewConfig,
   ViewDescriptor,
-} from './metadata';
+} from '../metadata';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,

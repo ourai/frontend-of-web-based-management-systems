@@ -1,4 +1,4 @@
-import { ResponseResult } from './shared/types';
+import { ResponseResult } from 'handie-vue';
 
 declare module 'axios' {
   interface AxiosInstance {

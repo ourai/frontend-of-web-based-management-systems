@@ -18,6 +18,7 @@ module.exports = {
         '@': resolve(`${APP_SRC}/shared`),
         '@petals': resolve('./external/petals'),
         '@kokiri': resolve('./external/kokiri'),
+        'handie-vue': resolve('./external/handie'),
       },
     },
   },

@@ -1,4 +1,5 @@
-import { ResponseResult } from '@/types';
+import { ResponseResult } from 'handie-vue';
+
 import httpClient from '@/utils/http';
 
 import { UserAndPermissions } from './typing';

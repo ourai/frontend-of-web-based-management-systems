@@ -16,7 +16,8 @@
     "paths": {
       "@/*": ["app/structure/modularized/src/shared/*"],
       "@petals/*": ["external/petals/*"],
-      "@kokiri/*": ["external/kokiri/*"]
+      "@kokiri/*": ["external/kokiri/*"],
+      "handie-vue": ["external/handie/index.ts"]
     }
   },
   "include": ["app/structure/modularized/src", "external"]

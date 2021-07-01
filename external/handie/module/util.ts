@@ -1,13 +1,13 @@
+import { isBoolean, isString } from '@ntks/toolbox';
 import { VueConstructor } from 'vue';
 
+import { getComponent } from '../component';
 import {
   ModuleResources,
   ModuleDependencies,
   ModuleComponentRefs,
   ModuleDescriptor,
-} from '../types';
-import { isBoolean, isString } from './is';
-import { getComponent } from './component';
+} from './typing';
 
 type ModuleComponents = Record<string, VueConstructor>;
 

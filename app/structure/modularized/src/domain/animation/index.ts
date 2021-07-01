@@ -1,4 +1,4 @@
-import { ModuleDescriptor } from '@/types';
+import { ModuleDescriptor } from 'handie-vue';
 
 import { MODULE_NAME, testUtil } from './helper';
 import TestWidget from './widgets/test-widget';

@@ -1,4 +1,4 @@
-import { registerModules } from '@/utils/module';
+import { registerModules } from 'handie-vue';
 
 import session from './session';
 import common from './common';
