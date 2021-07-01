@@ -2,6 +2,7 @@ import { VueConstructor, CreateElement } from 'vue';
 import {
   ColumnContext,
   CellRenderer,
+  FieldRenderer,
   TableColumn,
   ActionDescriptor,
   TableViewConfig,
@@ -15,9 +16,7 @@ import { isNumber, isFunction } from '@/utils/is';
 import ActionRenderer from '../action-renderer';
 import { DataTableProps } from './typing';
 
-function resolveCellRenderer(
-  renderer: string | VueConstructor | CellRenderer<TableColumn>,
-): CellRenderer<TableColumn> {
+function resolveCellRenderer(renderer: FieldRenderer): CellRenderer<TableColumn> {
   if (isFunction(renderer)) {
     return (renderer as any).extendOptions
       ? (h: CreateElement, data: ColumnContext<TableColumn>) =>
@@ -59,7 +58,7 @@ function resolveOperationColumn(
   context: ListViewContext,
   authority: Record<string, boolean> | null,
 ): TableColumn | null {
-  const actionsAuthority = context.getActionsAuthority();
+  const actionsAuthority = context.actionsAuthority;
 
   const actions = resolveAuthorizedActions(
     context.getActionsByContextType('single'),
@@ -101,20 +100,20 @@ function resolveTableColumns(
   context: ListViewContext,
   authority: Record<string, boolean> | null,
 ): TableColumn[] {
-  const cols: TableColumn[] = context.getFields().map(({ name, label, render, config = {} }) => ({
+  const cols: TableColumn[] = context.fields.map(({ name, label, render, config = {} }) => ({
     prop: name,
     label,
     render: render ? resolveCellRenderer(render) : undefined,
     ...config,
   }));
 
-  const checkableActions = isActionsAuthorized(context.getActionsAuthority(), authority)
+  const checkableActions = isActionsAuthorized(context.actionsAuthority, authority)
     ? resolveAuthorizedActions(
         ([] as ActionDescriptor[]).concat(
           context.getActionsByContextType('batch') || [],
           context.getActionsByContextType('both') || [],
         ),
-        context.getActionsAuthority(),
+        context.actionsAuthority,
         authority,
       )
     : [];

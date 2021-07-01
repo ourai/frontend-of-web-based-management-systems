@@ -13,7 +13,7 @@ export default class SearchRenderer extends Vue {
   private readonly context!: ViewContext;
 
   private render(h: CreateElement): VNode | null {
-    const search = this.context.getSearch();
+    const search = this.context.search;
 
     return isFunction(search) ? h(search as VueConstructor) : null;
   }

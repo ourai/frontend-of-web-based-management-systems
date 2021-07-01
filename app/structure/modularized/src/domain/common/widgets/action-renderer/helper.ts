@@ -1,8 +1,9 @@
 import Vue, { VNodeData, VueConstructor } from 'vue';
 import { MessageBox } from 'element-ui';
 import {
+  GenericRenderer,
+  BuiltInActionRenderer,
   ActionRenderer,
-  MixedActionRenderer,
   ActionDescriptor,
   ViewContext,
   ListViewContext,
@@ -13,7 +14,7 @@ import { isString } from '@/utils/is';
 
 const DEFAULT_ACTION_RENDER_TYPE = 'button';
 
-function resolveActionComponent(renderer: ActionRenderer): string {
+function resolveActionComponent(renderer: BuiltInActionRenderer): string {
   return renderer === 'button' ? 'OlButton' : 'OlLink';
 }
 
@@ -22,10 +23,10 @@ function getDefaultActionComponent(): string {
 }
 
 function getActionComponent(
-  renderer: MixedActionRenderer = DEFAULT_ACTION_RENDER_TYPE,
-): string | VueConstructor {
+  renderer: ActionRenderer = DEFAULT_ACTION_RENDER_TYPE,
+): GenericRenderer {
   return isString(renderer)
-    ? resolveActionComponent(renderer as ActionRenderer)
+    ? resolveActionComponent(renderer as BuiltInActionRenderer)
     : (renderer as VueConstructor);
 }
 

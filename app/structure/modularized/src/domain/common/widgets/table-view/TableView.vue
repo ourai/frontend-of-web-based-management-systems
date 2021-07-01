@@ -60,7 +60,7 @@ export default class TableView extends Vue {
   private busy: boolean = false;
 
   private get searchable() {
-    return !!this.context.getSearch();
+    return !!this.context.search;
   }
 
   private get accessible() {
@@ -68,10 +68,10 @@ export default class TableView extends Vue {
   }
 
   private get topActions() {
-    return isActionsAuthorized(this.context.getActionsAuthority(), this.accessible)
+    return isActionsAuthorized(this.context.actionsAuthority, this.accessible)
       ? resolveAuthorizedActions(
           this.context.getActions().filter(({ context }) => context && context !== 'single'),
-          this.context.getActionsAuthority(),
+          this.context.actionsAuthority,
           this.accessible,
         )
       : [];

@@ -1,6 +1,6 @@
 import { ActionDescriptor, ViewContext, ListViewContext, registerAction } from 'handie-vue';
 
-const actions = [
+([
   {
     name: 'gotoCreateFormView',
     context: 'free',
@@ -48,10 +48,4 @@ const actions = [
       context.deleteList &&
       context.deleteList(context.getValue()).then(() => context.refresh(context, vm)),
   },
-] as ActionDescriptor[];
-
-function registerActions(): void {
-  actions.forEach(action => registerAction(action));
-}
-
-export { registerActions };
+] as ActionDescriptor[]).forEach(action => registerAction(action));

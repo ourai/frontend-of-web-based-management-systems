@@ -7,7 +7,6 @@ import {
   ActionContextType,
   ActionDescriptor,
   SearchDescriptor,
-  TableViewConfig,
   ViewDescriptor,
 } from './metadata';
 
@@ -31,57 +30,68 @@ type RepositoryExecutor<ActionName = any, DataType = any> = {
   ): Promise<ResponseResult<DataType>>;
 };
 
-type ModuleContext<Repository> = {
+interface ModuleContext<R> {
   getModuleName: () => string;
   getDependencies: (refPath?: string) => ModuleDependencies | ModuleResources | undefined;
   getComponents: () => Record<string, VueConstructor>;
-  execute: RepositoryExecutor<keyof Repository>;
-};
+  execute: RepositoryExecutor<keyof R>;
+}
 
-type ViewContext<Repository = any> = Pick<ModuleContext<Repository>, 'execute'> & {
-  getModuleName: () => string;
-  getComponents: () => Record<string, VueConstructor>;
-  getSearch: () => SearchDescriptor | VueConstructor | undefined;
-  getFields: () => FieldDescriptor[];
+interface InternalViewContextOptions<VC = any, CT = Record<string, any>>
+  extends ViewDescriptor<CT> {
+  refresh?: (context: VC, vm: Vue) => Promise<any> | any;
+}
+
+interface InternalViewContext<R = any, CT = Record<string, any>>
+  extends Pick<ModuleContext<R>, 'getModuleName' | 'getComponents' | 'execute'> {
   getActions: () => ActionDescriptor[];
   getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
-  getActionsAuthority: () => string | undefined;
   getConfig: () => Record<string, any>;
   attach: (vm: Vue) => void;
   getView: () => Vue | undefined;
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
-  refresh: (context: ViewContext<Repository>, vm: Vue) => Promise<any> | any;
-};
+  refresh: (
+    context: InternalViewContextOptions<InternalViewContext<R>, CT> & InternalViewContext<R>,
+    vm: Vue,
+  ) => Promise<any> | any;
+}
 
-type ListViewContext<Repository = any, ValueType = any> = ViewContext<Repository> & {
-  getValue: <VT = ValueType>() => VT[];
-  getList: ShorthandRequest;
-  deleteOne: ShorthandRequest<string | Record<string, any>>;
-  deleteList: ShorthandRequest<string[] | Record<string, any>>;
-};
+type ViewContextOptions<R = any, CT = Record<string, any>> = InternalViewContextOptions<
+  InternalViewContext<R, CT>,
+  CT
+>;
 
-type ObjectViewContext<Repository = any, ValueType = any> = ViewContext<Repository> &
-  Record<'insert' | 'update', ShorthandRequest> & {
-    getOne: ShorthandRequest<string>;
-    getValue: <VT = ValueType>() => VT;
-  };
-
-type ViewContextOptions<R = any, ConfigType = Record<string, any>> = ViewDescriptor<ConfigType> & {
-  refresh?: (context: ViewContext<R>, vm: Vue) => Promise<any> | any;
-};
-
-type ListViewContextOptions<R = any> = ViewContextOptions<R, TableViewConfig> & {
+type ListViewContextOptions<R = any, CT = Record<string, any>> = ViewContextOptions<R, CT> & {
   getList: string;
   deleteOne?: string;
   deleteList?: string;
 };
 
-type ObjectViewContextOptions<R = any> = ViewContextOptions<R> & {
+type ObjectViewContextOptions<R = any, CT = Record<string, any>> = ViewContextOptions<R, CT> & {
   insert?: string;
   update?: string;
   getOne?: string;
 };
+
+type ViewContext<R = any, CT = Record<string, any>> = InternalViewContextOptions<
+  ViewContext<R, CT>,
+  CT
+> &
+  InternalViewContext<R, CT>;
+
+type ListViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> & {
+  getValue: <ValueType = VT>() => ValueType[];
+  getList: ShorthandRequest;
+  deleteOne: ShorthandRequest<string | Record<string, any>>;
+  deleteList: ShorthandRequest<string[] | Record<string, any>>;
+};
+
+type ObjectViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> &
+  Record<'insert' | 'update', ShorthandRequest> & {
+    getOne: ShorthandRequest<string>;
+    getValue: <ValueType = VT>() => ValueType;
+  };
 
 type KeptViewContextKeysInAction =
   | 'getModuleName'

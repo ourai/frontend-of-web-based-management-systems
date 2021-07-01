@@ -4,8 +4,6 @@ import VueRouter from 'vue-router';
 
 import '@kokiri/themes/antd/index.scss';
 
-import './shared/built-in';
-import './domain';
 import { storeModules, routes, setInterceptors } from './entry';
 import App from './App.vue';
 
