@@ -10,11 +10,13 @@ import {
   ActionDescriptor,
   RepositoryExecutor,
   ModuleContext,
-  ViewContextOptions,
-  ListViewContextOptions,
-  ObjectViewContextOptions,
+  ViewContextDescriptor,
+  ListViewContextDescriptor,
+  ObjectViewContextDescriptor,
   ViewContext,
+  ListShorthandRequests,
   ListViewContext,
+  ObjectShorthandRequest,
   ObjectViewContext,
   KeptViewContextKeysInAction,
   ViewContextInAction,
@@ -98,7 +100,7 @@ function callVuexMethodWithNamespace(
 
 function createGenericViewContext<R, CT>(
   moduleContext: ModuleContext<R>,
-  options: ViewContextOptions<R, CT>,
+  options: ViewContextDescriptor<R, CT>,
 ): ViewContext<R, CT> {
   let _vm: Vue | undefined;
 
@@ -141,12 +143,12 @@ function createGenericViewContext<R, CT>(
 
 function resolvePartialContext<
   R,
-  ViewContextOptions,
+  ViewContextDescriptor,
   SpecificViewContext,
   SpecificActionName extends keyof SpecificViewContext
 >(
   executor: RepositoryExecutor<keyof R>,
-  options: ViewContextOptions,
+  options: ViewContextDescriptor,
   actionNames: SpecificActionName[],
 ) {
   const actionMap = {} as Pick<SpecificViewContext, SpecificActionName>;
@@ -162,15 +164,15 @@ function resolvePartialContext<
 
 function createListViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ListViewContextOptions<R, CT>,
+  options: ListViewContextDescriptor<R, CT>,
 ): ListViewContext<R, VT, CT> {
   return {
     ...createGenericViewContext<R, CT>(moduleContext, options),
     ...resolvePartialContext<
       R,
-      ListViewContextOptions<R, CT>,
+      ListViewContextDescriptor<R, CT>,
       ListViewContext<R, VT, CT>,
-      'getList' | 'deleteOne' | 'deleteList'
+      keyof ListShorthandRequests
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
     getValue: () => [],
   };
@@ -178,15 +180,15 @@ function createListViewContext<R, VT, CT>(
 
 function createObjectViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ObjectViewContextOptions<R, CT>,
+  options: ObjectViewContextDescriptor<R, CT>,
 ): ObjectViewContext<R, VT, CT> {
   return {
     ...createGenericViewContext<R, CT>(moduleContext, options),
     ...resolvePartialContext<
       R,
-      ObjectViewContextOptions<R, CT>,
+      ObjectViewContextDescriptor<R, CT>,
       ObjectViewContext<R, VT, CT>,
-      'insert' | 'update' | 'getOne'
+      keyof ObjectShorthandRequest
     >(moduleContext.execute, options, ['insert', 'update', 'getOne']),
     getValue: () => ({} as any),
   };
@@ -194,22 +196,22 @@ function createObjectViewContext<R, VT, CT>(
 
 function createViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ListViewContextOptions<R, CT> | ObjectViewContextOptions<R, CT>,
+  options: ListViewContextDescriptor<R, CT> | ObjectViewContextDescriptor<R, CT>,
 ): ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT> {
   return options.type === 'object'
     ? (createObjectViewContext<R, VT, CT>(
         moduleContext,
-        options as ObjectViewContextOptions<R, CT>,
+        options as ObjectViewContextDescriptor<R, CT>,
       ) as ObjectViewContext<R, VT, CT>)
     : (createListViewContext<R, VT, CT>(
         moduleContext,
-        options as ListViewContextOptions<R, CT>,
+        options as ListViewContextDescriptor<R, CT>,
       ) as ListViewContext<R, VT, CT>);
 }
 
 function createView<R, VT, CT>(
   context: ModuleContext<R> | ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT>,
-  options?: ListViewContextOptions<R, CT> | ObjectViewContextOptions<R, CT>,
+  options?: ListViewContextDescriptor<R, CT> | ObjectViewContextDescriptor<R, CT>,
 ): VueConstructor {
   const resolved = options
     ? createViewContext(context as ModuleContext<R>, options)

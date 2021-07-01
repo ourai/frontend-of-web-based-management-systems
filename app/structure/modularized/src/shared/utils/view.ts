@@ -3,18 +3,18 @@ import { VueConstructor } from 'vue';
 import {
   ModuleContext,
   ViewType,
-  ListViewContextOptions,
+  ListViewContextDescriptor,
   ListViewContext,
-  ObjectViewContextOptions,
+  ObjectViewContextDescriptor,
   ObjectViewContext,
   createView,
 } from 'handie-vue';
 
 type UncertainContext<R, CTT> = ModuleContext<R> | CTT;
 
-type UnionViewContextOptions<R, CT> =
-  | ListViewContextOptions<R, CT>
-  | ObjectViewContextOptions<R, CT>;
+type UnionViewContextDescriptor<R, CT> =
+  | ListViewContextDescriptor<R, CT>
+  | ObjectViewContextDescriptor<R, CT>;
 
 type PartialOptions<OT> = Omit<OT, 'type' | 'render'>;
 
@@ -22,9 +22,9 @@ function resolveView<R, VT, CT>(
   type: ViewType,
   render: string,
   context: UncertainContext<R, ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<UnionViewContextOptions<R, CT>>,
+  options?: PartialOptions<UnionViewContextDescriptor<R, CT>>,
 ): VueConstructor {
-  let resolved: UnionViewContextOptions<R, CT> | undefined;
+  let resolved: UnionViewContextDescriptor<R, CT> | undefined;
 
   if (options) {
     resolved = { ...options, type, render };
@@ -37,21 +37,21 @@ function resolveView<R, VT, CT>(
 
 function createTableView<R, VT, CT>(
   context: UncertainContext<R, ListViewContext<R, VT, CT>>,
-  options?: PartialOptions<ListViewContextOptions<R, CT>>,
+  options?: PartialOptions<ListViewContextDescriptor<R, CT>>,
 ): VueConstructor {
   return resolveView<R, VT, CT>('list', 'TableView', context, options);
 }
 
 function createDetailView<R, VT, CT>(
   context: UncertainContext<R, ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<ObjectViewContextOptions<R, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<R, CT>>,
 ): VueConstructor {
   return resolveView<R, VT, CT>('object', 'DetailView', context, options);
 }
 
 function createFormView<R, VT, CT>(
   context: UncertainContext<R, ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<ObjectViewContextOptions<R, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<R, CT>>,
 ): VueConstructor {
   return resolveView<R, VT, CT>('object', 'FormView', context, options);
 }

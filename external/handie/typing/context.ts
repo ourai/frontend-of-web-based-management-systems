@@ -2,13 +2,7 @@ import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
-import {
-  FieldDescriptor,
-  ActionContextType,
-  ActionDescriptor,
-  SearchDescriptor,
-  ViewDescriptor,
-} from './metadata';
+import { ActionContextType, ActionDescriptor, ViewDescriptor } from './metadata';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,
@@ -37,12 +31,11 @@ interface ModuleContext<R> {
   execute: RepositoryExecutor<keyof R>;
 }
 
-interface InternalViewContextOptions<VC = any, CT = Record<string, any>>
-  extends ViewDescriptor<CT> {
+interface IntermediateContextDescriptor<VC, CT> extends ViewDescriptor<CT> {
   refresh?: (context: VC, vm: Vue) => Promise<any> | any;
 }
 
-interface InternalViewContext<R = any, CT = Record<string, any>>
+interface IntermediateViewContext<R, CT>
   extends Pick<ModuleContext<R>, 'getModuleName' | 'getComponents' | 'execute'> {
   getActions: () => ActionDescriptor[];
   getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
@@ -52,46 +45,64 @@ interface InternalViewContext<R = any, CT = Record<string, any>>
   commit: (type: string, payload?: any) => void;
   dispatch: (type: string, payload?: any) => Promise<void>;
   refresh: (
-    context: InternalViewContextOptions<InternalViewContext<R>, CT> & InternalViewContext<R>,
+    context: IntermediateContextDescriptor<IntermediateViewContext<R, CT>, CT> &
+      IntermediateViewContext<R, CT>,
     vm: Vue,
   ) => Promise<any> | any;
 }
 
-type ViewContextOptions<R = any, CT = Record<string, any>> = InternalViewContextOptions<
-  InternalViewContext<R, CT>,
+type ViewContextDescriptor<R = any, CT = Record<string, any>> = IntermediateContextDescriptor<
+  IntermediateViewContext<R, CT>,
   CT
 >;
 
-type ListViewContextOptions<R = any, CT = Record<string, any>> = ViewContextOptions<R, CT> & {
+type ListShorthandRequestNames = {
   getList: string;
   deleteOne?: string;
   deleteList?: string;
 };
 
-type ObjectViewContextOptions<R = any, CT = Record<string, any>> = ViewContextOptions<R, CT> & {
+type ListViewContextDescriptor<R = any, CT = Record<string, any>> = ViewContextDescriptor<R, CT> &
+  ListShorthandRequestNames;
+
+type ObjectShorthandRequestNames = {
   insert?: string;
   update?: string;
   getOne?: string;
 };
 
-type ViewContext<R = any, CT = Record<string, any>> = InternalViewContextOptions<
+type ObjectViewContextDescriptor<R = any, CT = Record<string, any>> = ViewContextDescriptor<R, CT> &
+  ObjectShorthandRequestNames;
+
+type ViewContext<R = any, CT = Record<string, any>> = IntermediateContextDescriptor<
   ViewContext<R, CT>,
   CT
 > &
-  InternalViewContext<R, CT>;
+  IntermediateViewContext<R, CT>;
 
-type ListViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> & {
-  getValue: <ValueType = VT>() => ValueType[];
+type ListShorthandRequests = {
   getList: ShorthandRequest;
   deleteOne: ShorthandRequest<string | Record<string, any>>;
   deleteList: ShorthandRequest<string[] | Record<string, any>>;
 };
 
+type ListContextMethods<VT> = ListShorthandRequests & {
+  getValue: <ValueType = VT>() => ValueType[];
+};
+
+type ListViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> &
+  ListContextMethods<VT>;
+
+type ObjectShorthandRequest = Record<'insert' | 'update', ShorthandRequest> & {
+  getOne: ShorthandRequest<string>;
+};
+
+type ObjectContextMethods<VT> = ObjectShorthandRequest & {
+  getValue: <ValueType = VT>() => ValueType;
+};
+
 type ObjectViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> &
-  Record<'insert' | 'update', ShorthandRequest> & {
-    getOne: ShorthandRequest<string>;
-    getValue: <ValueType = VT>() => ValueType;
-  };
+  ObjectContextMethods<VT>;
 
 type KeptViewContextKeysInAction =
   | 'getModuleName'
@@ -112,11 +123,13 @@ type ViewContextInAction<VC = ViewContext> = Omit<
 export {
   RepositoryExecutor,
   ModuleContext,
-  ViewContextOptions,
-  ListViewContextOptions,
-  ObjectViewContextOptions,
+  ViewContextDescriptor,
+  ListViewContextDescriptor,
+  ObjectViewContextDescriptor,
   ViewContext,
+  ListShorthandRequests,
   ListViewContext,
+  ObjectShorthandRequest,
   ObjectViewContext,
   KeptViewContextKeysInAction,
   ViewContextInAction,
