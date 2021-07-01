@@ -1,11 +1,16 @@
 import { isString, isFunction, capitalize } from '@ntks/toolbox';
 import Vue, { VueConstructor } from 'vue';
 
-import { noop } from '../function';
-import { omit } from '../object';
-import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from '../http';
-import { ActionContextType, ActionDescriptor } from '../metadata';
-import { getDependencies, getComponents } from '../module';
+import {
+  RequestParams,
+  ResponseResult,
+  ResponseSuccess,
+  ResponseFail,
+  ActionContextType,
+  ActionDescriptor,
+} from './typing';
+import { noop, omit } from './helper';
+import { getDependencies, getComponents } from './module';
 
 import {
   RepositoryExecutor,
@@ -18,7 +23,7 @@ import {
   ObjectViewContext,
   KeptViewContextKeysInAction,
   ViewContextInAction,
-} from './typing';
+} from './typing/context';
 
 const builtInActions = ([
   {
