@@ -30,5 +30,4 @@ export default createTableView(context, {
   getList: 'getAnimationList',
   deleteOne: 'deleteAnimationBy',
   deleteList: 'deleteAnimationListBy',
-  refresh: ctx => (ctx.getView() as any).fetchDataSource(),
 });

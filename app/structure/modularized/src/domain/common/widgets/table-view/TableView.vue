@@ -18,16 +18,17 @@
       :page-size="pageSize"
       :total="total"
       v-bind="tableProps"
+      v-loading="loading"
       @selection-change="handleSelectionChange"
-      @current-change="handlePageNumChange"
-      @size-change="handlePageSizeChange"
+      @current-change="context.setCurrentPage"
+      @size-change="context.setPageSize"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Inject } from 'vue-property-decorator';
-import { Pagination, ListViewContext, resolveViewContextInAction } from 'handie-vue';
+import { Component } from 'vue-property-decorator';
+import { resolveViewContextInAction, ListViewWidget } from 'handie-vue';
 
 import { getComponents } from '../../context';
 import SearchRenderer from '../search-renderer';
@@ -41,26 +42,13 @@ components.SearchRenderer = SearchRenderer;
 components.ActionRenderer = ActionRenderer;
 
 @Component({ components })
-export default class TableView extends Vue {
-  @Inject({ from: 'context', default: null })
-  private readonly context!: ListViewContext;
-
-  private dataSource: any[] = [];
-
+export default class TableView extends ListViewWidget {
   private selected: any[] = [];
 
   private tableProps: DataTableProps = {} as any;
 
-  private pageNum: number = 1;
-
-  private pageSize: number = 20;
-
-  private total: number = 0;
-
-  private busy: boolean = false;
-
   private get searchable() {
-    return !!this.context.search;
+    return !!this.context.getSearch();
   }
 
   private get accessible() {
@@ -68,10 +56,10 @@ export default class TableView extends Vue {
   }
 
   private get topActions() {
-    return isActionsAuthorized(this.context.actionsAuthority, this.accessible)
+    return isActionsAuthorized(this.context.getActionsAuthority(), this.accessible)
       ? resolveAuthorizedActions(
           this.context.getActions().filter(({ context }) => context && context !== 'single'),
-          this.context.actionsAuthority,
+          this.context.getActionsAuthority(),
           this.accessible,
         )
       : [];
@@ -81,38 +69,14 @@ export default class TableView extends Vue {
     return () => ({ ...resolveViewContextInAction(this.context), getValue: () => this.selected });
   }
 
-  public fetchDataSource(
-    pagination: Pagination = { pageNum: this.pageNum, pageSize: this.pageSize },
-  ): void {
-    this.busy = true;
-
-    this.context
-      .getList(pagination, (data, { pageNum, pageSize, total }) => {
-        this.dataSource = data;
-        this.pageNum = pageNum;
-        this.pageSize = pageSize;
-        this.total = total;
-      })
-      .finally(() => (this.busy = false));
-  }
-
   private handleSelectionChange(selected: any[]) {
     this.selected = selected;
   }
 
-  private handlePageNumChange(pageNum: number) {
-    this.fetchDataSource({ pageNum, pageSize: this.pageSize });
-  }
-
-  private handlePageSizeChange(pageSize: number) {
-    this.fetchDataSource({ pageNum: this.pageNum, pageSize });
-  }
-
-  private created(): void {
+  protected created(): void {
     this.tableProps = resolveTableProps(this.context, this.accessible);
 
-    this.context.attach(this);
-    this.fetchDataSource();
+    this.context.load();
   }
 }
 </script>

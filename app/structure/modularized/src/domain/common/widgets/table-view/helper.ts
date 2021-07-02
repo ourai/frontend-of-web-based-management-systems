@@ -58,7 +58,7 @@ function resolveOperationColumn(
   context: ListViewContext,
   authority: Record<string, boolean> | null,
 ): TableColumn | null {
-  const actionsAuthority = context.actionsAuthority;
+  const actionsAuthority = context.getActionsAuthority();
 
   const actions = resolveAuthorizedActions(
     context.getActionsByContextType('single'),
@@ -100,20 +100,21 @@ function resolveTableColumns(
   context: ListViewContext,
   authority: Record<string, boolean> | null,
 ): TableColumn[] {
-  const cols: TableColumn[] = context.fields.map(({ name, label, render, config = {} }) => ({
+  const cols: TableColumn[] = context.getFields().map(({ name, label, render, config = {} }) => ({
     prop: name,
     label,
     render: render ? resolveCellRenderer(render) : undefined,
     ...config,
   }));
+  const actionsAuthority = context.getActionsAuthority();
 
-  const checkableActions = isActionsAuthorized(context.actionsAuthority, authority)
+  const checkableActions = isActionsAuthorized(actionsAuthority, authority)
     ? resolveAuthorizedActions(
         ([] as ActionDescriptor[]).concat(
           context.getActionsByContextType('batch') || [],
           context.getActionsByContextType('both') || [],
         ),
-        context.actionsAuthority,
+        actionsAuthority,
         authority,
       )
     : [];

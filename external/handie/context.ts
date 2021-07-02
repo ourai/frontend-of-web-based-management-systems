@@ -2,6 +2,7 @@ import { isFunction } from '@ntks/toolbox';
 import Vue, { VueConstructor } from 'vue';
 
 import {
+  Pagination,
   RequestParams,
   ResponseResult,
   ResponseSuccess,
@@ -14,16 +15,18 @@ import {
   ListViewContextDescriptor,
   ObjectViewContextDescriptor,
   ViewContext,
-  ListShorthandRequests,
+  ListShorthandRequestNames,
   ListViewContext,
-  ObjectShorthandRequest,
+  ObjectShorthandRequestNames,
   ObjectViewContext,
   KeptViewContextKeysInAction,
   ViewContextInAction,
+  EventListeners,
 } from './typing';
 import { noop, omit } from './helper';
 import { getDependencies, getComponents } from './module';
 import { resolveAction } from './action';
+import { bindEvent, unbindEvent, triggerEvent } from './event';
 
 function isResultLogicallySuccessful(result: ResponseResult): boolean {
   return result.success === true;
@@ -98,10 +101,13 @@ function callVuexMethodWithNamespace(
   (vm as any).$store[methodName](`${namespace}/${type}`, payload);
 }
 
-function createGenericViewContext<R, CT>(
+function createGenericViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ViewContextDescriptor<R, CT>,
-): ViewContext<R, CT> {
+  options: ViewContextDescriptor<CT>,
+): Omit<
+  ViewContext<R, VT, CT>,
+  'getDataSource' | 'setDataSource' | 'getValue' | 'setValue' | 'getBusy' | 'setBusy'
+> {
   let _vm: Vue | undefined;
 
   const callVuexMethod = callVuexMethodWithNamespace.bind(
@@ -125,19 +131,24 @@ function createGenericViewContext<R, CT>(
     actionContextGroups[contextType].push(action);
   });
 
+  const listeners = {} as EventListeners;
+
   return {
-    ...options,
     execute: moduleContext.execute,
     getModuleName: moduleContext.getModuleName,
     getComponents: moduleContext.getComponents,
+    getView: () => options,
+    getFields: () => options.fields,
     getActions: () => actions,
     getActionsByContextType: (contextType: ActionContextType) => actionContextGroups[contextType],
+    getActionsAuthority: () => options.actionsAuthority,
     getConfig: () => (options.config || {}) as CT,
+    on: bindEvent.bind(null, listeners),
+    off: unbindEvent.bind(null, listeners),
+    emit: triggerEvent.bind(null, listeners),
     attach: (vm: Vue) => (_vm = vm),
-    getView: () => _vm,
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
-    refresh: options.refresh || noop,
   };
 }
 
@@ -164,64 +175,158 @@ function resolvePartialContext<
 
 function createListViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ListViewContextDescriptor<R, CT>,
+  options: ListViewContextDescriptor<CT>,
 ): ListViewContext<R, VT, CT> {
-  return {
-    ...createGenericViewContext<R, CT>(moduleContext, options),
+  const ctx = {
+    ...createGenericViewContext<R, VT, CT>(moduleContext, options),
     ...resolvePartialContext<
       R,
-      ListViewContextDescriptor<R, CT>,
+      ListViewContextDescriptor<CT>,
       ListViewContext<R, VT, CT>,
-      keyof ListShorthandRequests
+      keyof ListShorthandRequestNames
     >(moduleContext.execute, options, ['getList', 'deleteOne', 'deleteList']),
-    getValue: () => [],
+  };
+
+  let dataSource: VT = [] as any;
+  let val: VT = [] as any;
+  let loading: boolean = false;
+
+  let totalPage: number;
+  let currentPage: number;
+  let currentPageSize: number;
+
+  const setDataSource = (data: VT) => {
+    dataSource = data;
+    ctx.emit('dataChange', data);
+  };
+
+  const setTotal = (total: number) => {
+    totalPage = total;
+    ctx.emit('totalChange', total);
+  };
+
+  const setBusy = (busy: boolean) => {
+    loading = busy;
+    ctx.emit('busyChange', busy);
+  };
+
+  const loadData = async () => {
+    const pagination = {} as Pagination;
+
+    if (currentPage) {
+      pagination.pageNum = currentPage;
+    }
+
+    if (currentPageSize) {
+      pagination.pageSize = currentPageSize;
+    }
+
+    setBusy(true);
+
+    ctx
+      .getList(pagination, (data, { pageNum, pageSize, total }) => {
+        setDataSource(data);
+        setTotal(total);
+
+        ctx.emit('currentPageChange', pageNum);
+        ctx.emit('pageSizeChange', pageSize);
+      })
+      .finally(() => setBusy(false));
+  };
+
+  const setCurrentPage = (current: number) => {
+    currentPage = current;
+    loadData();
+  };
+
+  const setPageSize = (pageSize: number) => {
+    currentPageSize = pageSize;
+    loadData();
+  };
+
+  return {
+    ...ctx,
+    getDataSource: () => dataSource,
+    setDataSource,
+    getValue: () => val,
+    setValue: (value: VT) => (val = value),
+    getBusy: () => loading,
+    setBusy,
+    getSearch: () => options.search,
+    getTotal: () => totalPage,
+    getCurrentPage: () => currentPage,
+    setCurrentPage,
+    getPageSize: () => currentPageSize,
+    setPageSize,
+    load: loadData,
+    reload: loadData,
   };
 }
 
 function createObjectViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ObjectViewContextDescriptor<R, CT>,
+  options: ObjectViewContextDescriptor<CT>,
 ): ObjectViewContext<R, VT, CT> {
-  return {
-    ...createGenericViewContext<R, CT>(moduleContext, options),
+  const ctx = {
+    ...createGenericViewContext<R, VT, CT>(moduleContext, options),
     ...resolvePartialContext<
       R,
-      ObjectViewContextDescriptor<R, CT>,
+      ObjectViewContextDescriptor<CT>,
       ObjectViewContext<R, VT, CT>,
-      keyof ObjectShorthandRequest
+      keyof ObjectShorthandRequestNames
     >(moduleContext.execute, options, ['insert', 'update', 'getOne']),
-    getValue: () => ({} as any),
+  };
+
+  let dataSource: VT = {} as any;
+  let val: VT = {} as any;
+  let loading: boolean = false;
+
+  return {
+    ...ctx,
+    getDataSource: () => dataSource,
+    setDataSource: (data: VT) => {
+      dataSource = data;
+      ctx.emit('dataChange', data);
+    },
+    getValue: () => val,
+    setValue: (value: VT) => (val = value),
+    getBusy: () => loading,
+    setBusy: (busy: boolean) => {
+      loading = busy;
+      ctx.emit('busyChange', loading);
+    },
   };
 }
 
 function createViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
-  options: ListViewContextDescriptor<R, CT> | ObjectViewContextDescriptor<R, CT>,
+  options: ListViewContextDescriptor<CT> | ObjectViewContextDescriptor<CT>,
 ): ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT> {
   return options.type === 'object'
     ? (createObjectViewContext<R, VT, CT>(
         moduleContext,
-        options as ObjectViewContextDescriptor<R, CT>,
+        options as ObjectViewContextDescriptor<CT>,
       ) as ObjectViewContext<R, VT, CT>)
     : (createListViewContext<R, VT, CT>(
         moduleContext,
-        options as ListViewContextDescriptor<R, CT>,
+        options as ListViewContextDescriptor<CT>,
       ) as ListViewContext<R, VT, CT>);
 }
 
 function createView<R, VT, CT>(
   context: ModuleContext<R> | ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT>,
-  options?: ListViewContextDescriptor<R, CT> | ObjectViewContextDescriptor<R, CT>,
+  options?: ListViewContextDescriptor<CT> | ObjectViewContextDescriptor<CT>,
 ): VueConstructor {
   const resolved = options
     ? createViewContext(context as ModuleContext<R>, options)
     : (context as ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT>);
+  const view = resolved.getView();
 
   return Vue.extend({
-    name: resolved.name,
+    name: view.name,
     components: resolved.getComponents(),
     provide: { context: resolved },
-    render: h => h(resolved.render),
+    render: h => h(view.render),
   });
 }
 
@@ -231,10 +336,11 @@ function resolveViewContextInAction<VC extends ViewContext = ViewContext>(
   const keptKeys: KeptViewContextKeysInAction[] = [
     'getModuleName',
     'getView',
+    'getValue',
     'execute',
     'commit',
     'dispatch',
-    'refresh',
+    'reload',
     'getList',
     'deleteOne',
     'deleteList',

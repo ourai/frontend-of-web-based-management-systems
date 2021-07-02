@@ -33,19 +33,15 @@ import { ActionDescriptor, ViewContext, ListViewContext, registerAction } from '
     context: 'single',
     text: '删除',
     danger: true,
-    execute: (context: ListViewContext, vm: Vue) =>
-      context.deleteOne &&
-      context.deleteOne(context.getValue()[0]).then(() => {
-        context.refresh(context, vm);
-      }),
+    execute: (context: ListViewContext) =>
+      context.deleteOne && context.deleteOne(context.getValue()[0]).then(() => context.reload()),
   },
   {
     name: 'deleteList',
     context: 'batch',
     text: '批量删除',
     danger: true,
-    execute: (context: ListViewContext, vm: Vue) =>
-      context.deleteList &&
-      context.deleteList(context.getValue()).then(() => context.refresh(context, vm)),
+    execute: (context: ListViewContext) =>
+      context.deleteList && context.deleteList(context.getValue()).then(() => context.reload()),
   },
 ] as ActionDescriptor[]).forEach(action => registerAction(action));

@@ -1,6 +1,6 @@
 import { VueConstructor, CreateElement, VNode } from 'vue';
 import { Vue, Component, Inject } from 'vue-property-decorator';
-import { ViewContext } from 'handie-vue';
+import { ListViewContext } from 'handie-vue';
 
 import { isFunction } from '@/utils/is';
 
@@ -10,10 +10,10 @@ import { isFunction } from '@/utils/is';
 })
 export default class SearchRenderer extends Vue {
   @Inject({ from: 'context', default: null })
-  private readonly context!: ViewContext;
+  private readonly context!: ListViewContext;
 
   private render(h: CreateElement): VNode | null {
-    const search = this.context.search;
+    const search = this.context.getSearch();
 
     return isFunction(search) ? h(search as VueConstructor) : null;
   }

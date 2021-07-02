@@ -2,7 +2,14 @@ import Vue, { VueConstructor } from 'vue';
 
 import { RequestParams, ResponseResult, ResponseSuccess, ResponseFail } from './http';
 import { ModuleDependencies, ModuleResources } from './module';
-import { ActionContextType, ActionDescriptor, ViewDescriptor } from './metadata';
+import {
+  FieldDescriptor,
+  ActionContextType,
+  ActionDescriptor,
+  SearchDescriptor,
+  ViewDescriptor,
+} from './metadata';
+import { EventWithNamespace, EventHandler, EventHandlers } from './event';
 
 type ShorthandRequest<ParamsType = RequestParams> = (
   params: ParamsType,
@@ -31,30 +38,7 @@ interface ModuleContext<R> {
   execute: RepositoryExecutor<keyof R>;
 }
 
-interface IntermediateContextDescriptor<VC, CT> extends ViewDescriptor<CT> {
-  refresh?: (context: VC, vm: Vue) => Promise<any> | any;
-}
-
-interface IntermediateViewContext<R, CT>
-  extends Pick<ModuleContext<R>, 'getModuleName' | 'getComponents' | 'execute'> {
-  getActions: () => ActionDescriptor[];
-  getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
-  getConfig: () => Record<string, any>;
-  attach: (vm: Vue) => void;
-  getView: () => Vue | undefined;
-  commit: (type: string, payload?: any) => void;
-  dispatch: (type: string, payload?: any) => Promise<void>;
-  refresh: (
-    context: IntermediateContextDescriptor<IntermediateViewContext<R, CT>, CT> &
-      IntermediateViewContext<R, CT>,
-    vm: Vue,
-  ) => Promise<any> | any;
-}
-
-type ViewContextDescriptor<R = any, CT = Record<string, any>> = IntermediateContextDescriptor<
-  IntermediateViewContext<R, CT>,
-  CT
->;
+interface ViewContextDescriptor<CT = Record<string, any>> extends ViewDescriptor<CT> {}
 
 type ListShorthandRequestNames = {
   getList: string;
@@ -62,7 +46,7 @@ type ListShorthandRequestNames = {
   deleteList?: string;
 };
 
-type ListViewContextDescriptor<R = any, CT = Record<string, any>> = ViewContextDescriptor<R, CT> &
+type ListViewContextDescriptor<CT = Record<string, any>> = ViewContextDescriptor<CT> &
   ListShorthandRequestNames;
 
 type ObjectShorthandRequestNames = {
@@ -71,46 +55,61 @@ type ObjectShorthandRequestNames = {
   getOne?: string;
 };
 
-type ObjectViewContextDescriptor<R = any, CT = Record<string, any>> = ViewContextDescriptor<R, CT> &
+type ObjectViewContextDescriptor<CT = Record<string, any>> = ViewContextDescriptor<CT> &
   ObjectShorthandRequestNames;
 
-type ViewContext<R = any, CT = Record<string, any>> = IntermediateContextDescriptor<
-  ViewContext<R, CT>,
-  CT
-> &
-  IntermediateViewContext<R, CT>;
+interface ViewContext<R = any, VT = any, CT = Record<string, any>>
+  extends Pick<ModuleContext<R>, 'getModuleName' | 'getComponents' | 'execute'> {
+  getView: () => ViewDescriptor<CT>;
+  getFields: () => FieldDescriptor[];
+  getActions: () => ActionDescriptor[];
+  getActionsByContextType: (contextType: ActionContextType) => ActionDescriptor[];
+  getActionsAuthority: () => string | undefined;
+  getConfig: () => Record<string, any>;
+  getDataSource: () => VT;
+  setDataSource: (data: VT) => void;
+  getValue: () => VT;
+  setValue: (value: VT) => void;
+  getBusy: () => boolean;
+  setBusy: (busy: boolean) => void;
+  on: (event: EventWithNamespace | EventHandlers, handler?: EventHandler) => void;
+  off: (event?: EventWithNamespace, handler?: EventHandler) => void;
+  emit: <PayloadType extends any = any>(event: EventWithNamespace, payload?: PayloadType) => void;
+  attach: (vm: Vue) => void;
+  commit: (type: string, payload?: any) => void;
+  dispatch: (type: string, payload?: any) => Promise<void>;
+}
 
-type ListShorthandRequests = {
+interface ListViewContext<R = any, VT = any, CT = Record<string, any>>
+  extends ViewContext<R, VT, CT> {
+  getSearch: () => SearchDescriptor | VueConstructor | undefined;
+  getTotal: () => number;
+  getCurrentPage: () => number;
+  setCurrentPage: (current: number) => void;
+  getPageSize: () => number;
+  setPageSize: (size: number) => void;
+  load: () => Promise<any>;
+  reload: () => Promise<any>;
   getList: ShorthandRequest;
   deleteOne: ShorthandRequest<string | Record<string, any>>;
   deleteList: ShorthandRequest<string[] | Record<string, any>>;
-};
+}
 
-type ListContextMethods<VT> = ListShorthandRequests & {
-  getValue: <ValueType = VT>() => ValueType[];
-};
-
-type ListViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> &
-  ListContextMethods<VT>;
-
-type ObjectShorthandRequest = Record<'insert' | 'update', ShorthandRequest> & {
+interface ObjectViewContext<R = any, VT = any, CT = Record<string, any>>
+  extends ViewContext<R, VT, CT> {
   getOne: ShorthandRequest<string>;
-};
-
-type ObjectContextMethods<VT> = ObjectShorthandRequest & {
-  getValue: <ValueType = VT>() => ValueType;
-};
-
-type ObjectViewContext<R = any, VT = any, CT = Record<string, any>> = ViewContext<R, CT> &
-  ObjectContextMethods<VT>;
+  insert: ShorthandRequest;
+  update: ShorthandRequest;
+}
 
 type KeptViewContextKeysInAction =
   | 'getModuleName'
   | 'getView'
+  | 'getValue'
   | 'execute'
   | 'commit'
   | 'dispatch'
-  | 'refresh'
+  | 'reload'
   | 'getList'
   | 'deleteOne'
   | 'deleteList';
@@ -124,12 +123,12 @@ export {
   RepositoryExecutor,
   ModuleContext,
   ViewContextDescriptor,
+  ListShorthandRequestNames,
   ListViewContextDescriptor,
+  ObjectShorthandRequestNames,
   ObjectViewContextDescriptor,
   ViewContext,
-  ListShorthandRequests,
   ListViewContext,
-  ObjectShorthandRequest,
   ObjectViewContext,
   KeptViewContextKeysInAction,
   ViewContextInAction,

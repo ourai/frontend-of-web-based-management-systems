@@ -32,7 +32,7 @@ export default class DetailView extends Vue {
   }
 
   private get fields() {
-    return this.context.fields;
+    return this.context.getFields();
   }
 
   private created(): void {

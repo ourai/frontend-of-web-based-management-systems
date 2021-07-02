@@ -32,7 +32,7 @@ export default class FormView extends Vue {
   }
 
   private get fields() {
-    return this.context.fields;
+    return this.context.getFields();
   }
 
   private created(): void {

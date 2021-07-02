@@ -4,13 +4,12 @@
 
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator';
-
-import TableField from '@/widgets/TableField';
+import { TableFieldWidget } from 'handie-vue';
 
 import { AnimationEntity } from '../../typing';
 
 @Component
-export default class AnimationListTitleField extends TableField<AnimationEntity> {
+export default class AnimationListTitleField extends TableFieldWidget<AnimationEntity> {
   @Prop({ type: String, default: '' })
   private readonly value!: string;
 }
