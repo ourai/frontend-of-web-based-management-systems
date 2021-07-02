@@ -1,3 +1,4 @@
-import GameList from './game-list/GameList.vue';
+import GameList from './game-list';
+import GameDetail from './game-detail';
 
-export { GameList };
+export { GameList, GameDetail };

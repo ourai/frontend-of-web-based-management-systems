@@ -27,7 +27,7 @@ export default createTableView(context, {
   ],
   search: Search,
   config: { checkable: true, operationColumnWidth: 250 },
-  getList: 'getAnimationList',
-  deleteOne: 'deleteAnimationBy',
-  deleteList: 'deleteAnimationListBy',
+  getList: 'getList',
+  deleteOne: 'deleteOneBy',
+  deleteList: 'deleteListBy',
 });

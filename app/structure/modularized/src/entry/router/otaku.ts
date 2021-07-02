@@ -2,7 +2,7 @@ import { RouteConfig } from '@/types';
 
 import { AnimationList, AnimationDetail, AnimationForm } from '../../domain/animation/views';
 import { ComicList } from '../../domain/comic/views';
-import { GameList } from '../../domain/game/views';
+import { GameList, GameDetail } from '../../domain/game/views';
 import { NovelList } from '../../domain/novel/views';
 
 import AdminLayout from '../layouts/admin';
@@ -49,6 +49,12 @@ export default {
       path: 'games',
       component: GameList,
       meta: { text: '游戏', auth: 'game:read' },
+    },
+    {
+      name: 'gameDetail',
+      path: 'games/:id',
+      component: GameDetail,
+      meta: { text: '游戏详情', auth: 'game:read', show: false },
     },
     {
       name: 'novelList',

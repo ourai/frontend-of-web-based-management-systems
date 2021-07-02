@@ -104,10 +104,7 @@ function callVuexMethodWithNamespace(
 function createGenericViewContext<R, VT, CT>(
   moduleContext: ModuleContext<R>,
   options: ViewContextDescriptor<CT>,
-): Omit<
-  ViewContext<R, VT, CT>,
-  'getDataSource' | 'setDataSource' | 'getValue' | 'setValue' | 'getBusy' | 'setBusy'
-> {
+): Omit<ViewContext<R, VT, CT>, 'getDataSource' | 'setDataSource' | 'getValue' | 'setValue'> {
   let _vm: Vue | undefined;
 
   const callVuexMethod = callVuexMethodWithNamespace.bind(
@@ -133,7 +130,7 @@ function createGenericViewContext<R, VT, CT>(
 
   const listeners = {} as EventListeners;
 
-  return {
+  const ctx = {
     execute: moduleContext.execute,
     getModuleName: moduleContext.getModuleName,
     getComponents: moduleContext.getComponents,
@@ -149,6 +146,17 @@ function createGenericViewContext<R, VT, CT>(
     attach: (vm: Vue) => (_vm = vm),
     commit: callVuexMethod.bind(null, 'commit'),
     dispatch: async (type: string, payload?: any) => callVuexMethod('dispatch', type, payload),
+  };
+
+  let loading: boolean = false;
+
+  return {
+    ...ctx,
+    getBusy: () => loading,
+    setBusy: (busy: boolean) => {
+      loading = busy;
+      ctx.emit('busyChange', busy);
+    },
   };
 }
 
@@ -189,7 +197,6 @@ function createListViewContext<R, VT, CT>(
 
   let dataSource: VT = [] as any;
   let val: VT = [] as any;
-  let loading: boolean = false;
 
   let totalPage: number;
   let currentPage: number;
@@ -205,33 +212,28 @@ function createListViewContext<R, VT, CT>(
     ctx.emit('totalChange', total);
   };
 
-  const setBusy = (busy: boolean) => {
-    loading = busy;
-    ctx.emit('busyChange', busy);
-  };
-
   const loadData = async () => {
-    const pagination = {} as Pagination;
+    const condition = {} as Pagination;
 
     if (currentPage) {
-      pagination.pageNum = currentPage;
+      condition.pageNum = currentPage;
     }
 
     if (currentPageSize) {
-      pagination.pageSize = currentPageSize;
+      condition.pageSize = currentPageSize;
     }
 
-    setBusy(true);
+    ctx.setBusy(true);
 
     ctx
-      .getList(pagination, (data, { pageNum, pageSize, total }) => {
+      .getList(condition, (data, { pageNum, pageSize, total }) => {
         setDataSource(data);
         setTotal(total);
 
         ctx.emit('currentPageChange', pageNum);
         ctx.emit('pageSizeChange', pageSize);
       })
-      .finally(() => setBusy(false));
+      .finally(() => ctx.setBusy(false));
   };
 
   const setCurrentPage = (current: number) => {
@@ -250,8 +252,6 @@ function createListViewContext<R, VT, CT>(
     setDataSource,
     getValue: () => val,
     setValue: (value: VT) => (val = value),
-    getBusy: () => loading,
-    setBusy,
     getSearch: () => options.search,
     getTotal: () => totalPage,
     getCurrentPage: () => currentPage,
@@ -279,7 +279,6 @@ function createObjectViewContext<R, VT, CT>(
 
   let dataSource: VT = {} as any;
   let val: VT = {} as any;
-  let loading: boolean = false;
 
   return {
     ...ctx,
@@ -290,11 +289,6 @@ function createObjectViewContext<R, VT, CT>(
     },
     getValue: () => val,
     setValue: (value: VT) => (val = value),
-    getBusy: () => loading,
-    setBusy: (busy: boolean) => {
-      loading = busy;
-      ctx.emit('busyChange', loading);
-    },
   };
 }
 

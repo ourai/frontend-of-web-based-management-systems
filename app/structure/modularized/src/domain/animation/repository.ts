@@ -5,15 +5,15 @@ import httpClient from '@/utils/http';
 import { AnimationEntity } from './typing';
 
 class AnimationRepository {
-  public async getAnimationList(condition: Pagination): Promise<ResponseResult<AnimationEntity[]>> {
+  public async getList(condition: Pagination): Promise<ResponseResult<AnimationEntity[]>> {
     return httpClient.get('/api/animations', { params: condition });
   }
 
-  public async getAnimationById(id: string): Promise<ResponseResult<AnimationEntity>> {
+  public async getOneById(id: string): Promise<ResponseResult<AnimationEntity>> {
     return httpClient.get(`/api/animations/${id}`);
   }
 
-  public async deleteAnimationListBy(
+  public async deleteListBy(
     animationList: AnimationEntity[],
   ): Promise<ResponseResult<AnimationEntity[]>> {
     return httpClient.delete('/api/animations', {
@@ -21,9 +21,7 @@ class AnimationRepository {
     });
   }
 
-  public async deleteAnimationBy(
-    animation: AnimationEntity,
-  ): Promise<ResponseResult<AnimationEntity>> {
+  public async deleteOneBy(animation: AnimationEntity): Promise<ResponseResult<AnimationEntity>> {
     return httpClient.delete(`/api/animations/${animation.id}`);
   }
 }

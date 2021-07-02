@@ -9,5 +9,5 @@ export default createDetailView(context, {
     { name: 'description', label: '简介' },
     { name: 'episodes', label: '剧集' },
   ],
-  getOne: 'getAnimationById',
+  getOne: 'getOneById',
 });
