@@ -1,3 +1,4 @@
+import { isNumber, isFunction, omit } from '@ntks/toolbox';
 import { VueConstructor, CreateElement } from 'vue';
 import {
   ColumnContext,
@@ -7,11 +8,8 @@ import {
   ActionDescriptor,
   TableViewConfig,
   ListViewContext,
-  omit,
   resolveViewContextInAction,
 } from 'handie-vue';
-
-import { isNumber, isFunction } from '@/utils/is';
 
 import ActionRenderer from '../action-renderer';
 import { DataTableProps } from './typing';

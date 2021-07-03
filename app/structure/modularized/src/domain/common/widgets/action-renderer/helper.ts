@@ -1,3 +1,4 @@
+import { isString, noop } from '@ntks/toolbox';
 import Vue, { VNodeData, VueConstructor } from 'vue';
 import { MessageBox } from 'element-ui';
 import {
@@ -7,10 +8,7 @@ import {
   ActionDescriptor,
   ViewContext,
   ListViewContext,
-  noop,
 } from 'handie-vue';
-
-import { isString } from '@/utils/is';
 
 const DEFAULT_ACTION_RENDER_TYPE = 'button';
 

@@ -1,8 +1,7 @@
+import { isFunction } from '@ntks/toolbox';
 import { VueConstructor, CreateElement, VNode } from 'vue';
 import { Vue, Component, Inject } from 'vue-property-decorator';
 import { ListViewContext } from 'handie-vue';
-
-import { isFunction } from '@/utils/is';
 
 @Component({
   // @ts-ignore
