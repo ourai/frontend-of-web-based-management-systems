@@ -14,10 +14,8 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["app/structure/modularized/src/shared/*"],
-      "@petals/*": ["external/petals/*"],
-      "@kokiri/*": ["external/kokiri/*"]
+      "@/*": ["app/structure/modularized/src/shared/*"]
     }
   },
-  "include": ["app/structure/modularized/src", "external"]
+  "include": ["app/structure/modularized/src"]
 }

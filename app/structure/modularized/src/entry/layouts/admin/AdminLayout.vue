@@ -45,7 +45,7 @@ import {
   LayoutHeader,
   LayoutMain,
   LayoutAside,
-} from '@kokiri/components';
+} from 'kokiri';
 
 import { RouteConfig } from '@/types';
 

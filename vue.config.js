@@ -16,8 +16,6 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve(`${APP_SRC}/shared`),
-        '@petals': resolve('./external/petals'),
-        '@kokiri': resolve('./external/kokiri'),
       },
     },
   },
@@ -35,7 +33,7 @@ module.exports = {
         sassOptions: {
           fiber: require('fibers'),
         },
-        additionalData: `@import "~@kokiri/themes/antd/helper";`,
+        additionalData: `@import "kokiri/dist/themes/antd/helper";`,
       },
     },
   },
