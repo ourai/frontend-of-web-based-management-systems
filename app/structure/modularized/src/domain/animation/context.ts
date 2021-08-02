@@ -1,6 +1,7 @@
-import { createModuleContext } from 'handie-vue';
+import { getComponents as _getComponents } from '@/utils';
 
 import { MODULE_NAME } from './helper';
-import repo from './repository';
 
-export default createModuleContext(MODULE_NAME, repo);
+const getComponents = _getComponents.bind(null, MODULE_NAME);
+
+export { getComponents };

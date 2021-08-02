@@ -1,15 +1,17 @@
-const { getPagination, getPaginated, resolveResult } = require('../helper'); // eslint-disable-line @typescript-eslint/no-var-requires
+const { resolveMatched, getPagination, getPaginated, resolveResult } = require('../helper'); // eslint-disable-line @typescript-eslint/no-var-requires
 const dataSource = require('./data.json'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 const animations = Object.keys(dataSource).map(id => ({ id, ...dataSource[id] }));
 
 module.exports = {
   'GET /api/animations': (req, res) => {
-    const { pageSize, pageNum } = getPagination(req.query);
+    const { title = '', description = '' } = req.query;
+    const matched = resolveMatched(animations, { title, description });
+    const pagination = getPagination(req.query);
 
     return res.json(
-      resolveResult(getPaginated(animations, { pageSize, pageNum }), {
-        extra: { pageNum, pageSize, total: animations.length },
+      resolveResult(getPaginated(matched, pagination), {
+        extra: { ...pagination, total: matched.length },
       }),
     );
   },

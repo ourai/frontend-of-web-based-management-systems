@@ -1,6 +1,9 @@
-import { createModuleContext } from 'handie-vue';
+import { createModuleContext } from '@/utils';
 
 import { MODULE_NAME } from './helper';
-import repo from './repository';
+import * as repo from './repository';
 
-export default createModuleContext(MODULE_NAME, repo);
+export default createModuleContext({
+  moduleName: MODULE_NAME,
+  actions: repo,
+});

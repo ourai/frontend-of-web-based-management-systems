@@ -1,16 +1,16 @@
-import { createTableView } from '@/utils/view';
+import { ViewDescriptor } from '@/types';
 
-import context from '../../context';
-
-import Search from './Search.vue';
 import TitleField from './TitleField.vue';
 import EpisodesField from './EpisodesField.vue';
 
-export default createTableView(context, {
+export default {
   name: 'AnimationListView',
+  type: 'list',
+  render: 'TableView',
+  config: { operationColumnWidth: 250 },
   fields: [
-    { name: 'title', label: '标题', render: TitleField, config: { width: '300' } },
-    { name: 'description', label: '简介' },
+    { name: 'title', render: TitleField, config: { width: '300' } },
+    'description',
     {
       name: 'episodes',
       label: '集数',
@@ -21,13 +21,12 @@ export default createTableView(context, {
   actions: [
     { name: 'gotoCreateFormView', authority: 'animation:edit', primary: true },
     { name: 'deleteList', authority: 'animation:edit' },
+    { text: '选择一条及以上', context: 'both' },
     'gotoDetailView',
     { name: 'gotoEditFormView', authority: 'animation:edit' },
     { name: 'deleteOne', authority: 'animation:edit' },
   ],
-  search: Search,
-  config: { checkable: true, operationColumnWidth: 250 },
-  getList: 'getList',
-  deleteOne: 'deleteOneBy',
-  deleteList: 'deleteListBy',
-});
+  search: {
+    filters: ['title', 'description'],
+  },
+} as ViewDescriptor;

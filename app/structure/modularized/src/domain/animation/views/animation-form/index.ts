@@ -1,13 +1,8 @@
-import { createFormView } from '@/utils/view';
+import { ViewDescriptor } from '@/types';
 
-import context from '../../context';
-
-export default createFormView(context, {
+export default {
   name: 'AnimationFormView',
-  fields: [
-    { name: 'title', label: '标题' },
-    { name: 'description', label: '简介' },
-    { name: 'episodes', label: '剧集' },
-  ],
-  getOne: 'getOneById',
-});
+  category: 'object',
+  render: 'FormView',
+  fields: ['title', 'description', 'form', 'episodes'],
+} as ViewDescriptor;

@@ -1,31 +1,26 @@
-import { Pagination, ResponseResult } from 'handie-vue';
-
+import { Pagination, ResponseResult } from '@/types';
 import httpClient from '@/utils/http';
 
 import { AnimationEntity } from './typing';
 
-class AnimationRepository {
-  public async getList(condition: Pagination): Promise<ResponseResult<AnimationEntity[]>> {
-    return httpClient.get('/api/animations', { params: condition });
-  }
-
-  public async getOneById(id: string): Promise<ResponseResult<AnimationEntity>> {
-    return httpClient.get(`/api/animations/${id}`);
-  }
-
-  public async deleteListBy(
-    animationList: AnimationEntity[],
-  ): Promise<ResponseResult<AnimationEntity[]>> {
-    return httpClient.delete('/api/animations', {
-      params: { ids: animationList.map(({ id }) => id).join(',') },
-    });
-  }
-
-  public async deleteOneBy(animation: AnimationEntity): Promise<ResponseResult<AnimationEntity>> {
-    return httpClient.delete(`/api/animations/${animation.id}`);
-  }
+async function getList(condition: Pagination): Promise<ResponseResult<AnimationEntity[]>> {
+  return httpClient.get('/api/animations', { params: condition });
 }
 
-const repo = new AnimationRepository();
+async function getOne(id: string): Promise<ResponseResult<AnimationEntity>> {
+  return httpClient.get(`/api/animations/${id}`);
+}
 
-export { AnimationRepository, repo as default };
+async function deleteList(
+  animationList: AnimationEntity[],
+): Promise<ResponseResult<AnimationEntity[]>> {
+  return httpClient.delete('/api/animations', {
+    params: { ids: animationList.map(({ id }) => id).join(',') },
+  });
+}
+
+async function deleteOne(animation: AnimationEntity): Promise<ResponseResult<AnimationEntity>> {
+  return httpClient.delete(`/api/animations/${animation.id}`);
+}
+
+export { getList, getOne, deleteList, deleteOne };

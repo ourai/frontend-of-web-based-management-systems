@@ -1,13 +1,10 @@
-import { createDetailView } from '@/utils/view';
+import { ViewDescriptor } from '@/types';
 
-import context from '../../context';
+import EpisodesField from './EpisodesField.vue';
 
-export default createDetailView(context, {
+export default {
   name: 'AnimationDetailView',
-  fields: [
-    { name: 'title', label: '标题' },
-    { name: 'description', label: '简介' },
-    { name: 'episodes', label: '剧集' },
-  ],
-  getOne: 'getOneById',
-});
+  category: 'object',
+  render: 'DetailView',
+  fields: ['title', 'description', 'form', { name: 'episodes', render: EpisodesField }],
+} as ViewDescriptor;

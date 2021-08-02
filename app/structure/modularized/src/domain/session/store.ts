@@ -1,8 +1,8 @@
-import { isArray, noop } from '@ntks/toolbox';
 import { ActionHandler } from 'vuex';
 
+import { isArray, noop } from '@/utils';
+
 import { UserInfo, UserPermission, UserAndPermissions } from './typing';
-import { MODULE_NAME } from './helper';
 import context from './context';
 
 type UserAuthority = Record<'accessible' | 'operable', Record<string, boolean> | null>;
@@ -72,12 +72,4 @@ const actions: SessionActions<SessionState> = {
   },
 };
 
-export default {
-  namespace: MODULE_NAME,
-  store: {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-  },
-};
+export default { state, mutations, actions };

@@ -1,59 +1,92 @@
-import { VueConstructor } from 'vue';
+import { createView } from 'handie-vue';
 
 import {
+  ComponentCtor,
   ModuleContext,
-  ViewType,
+  GenericRenderer,
+  ViewCategory,
   ListViewContextDescriptor,
-  ListViewContext,
   ObjectViewContextDescriptor,
+  ListViewContext,
   ObjectViewContext,
-  createView,
-} from 'handie-vue';
+} from '../types';
 
-type UncertainContext<R, CTT> = ModuleContext<R> | CTT;
+type ViewGetter = () => ComponentCtor;
 
-type UnionViewContextDescriptor<CT> =
-  | ListViewContextDescriptor<CT>
-  | ObjectViewContextDescriptor<CT>;
+type UncertainContext<CTT> = ModuleContext | CTT;
 
-type PartialOptions<OT> = Omit<OT, 'type' | 'render'>;
+type UnionViewContextDescriptor<VT, CT> =
+  | ListViewContextDescriptor<VT, CT>
+  | ObjectViewContextDescriptor<VT, CT>;
 
-function resolveView<R, VT, CT>(
-  type: ViewType,
-  render: string,
-  context: UncertainContext<R, ListViewContext<R, VT, CT> | ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<UnionViewContextDescriptor<CT>>,
-): VueConstructor {
-  let resolved: UnionViewContextDescriptor<CT> | undefined;
+type PartialOptions<OT> = Omit<OT, 'type' | 'render'> & {
+  render?: GenericRenderer;
+};
+
+function resolveView<VT, CT>(
+  context: UncertainContext<ListViewContext<VT, CT> | ObjectViewContext<VT, CT>>,
+  category: ViewCategory,
+  defaultRenderer: string,
+  options?: PartialOptions<UnionViewContextDescriptor<VT, CT>>,
+): ComponentCtor {
+  let resolved: UnionViewContextDescriptor<VT, CT> | undefined;
 
   if (options) {
-    resolved = { ...options, type, render };
+    resolved = { render: defaultRenderer, ...options, category };
   } else {
     resolved = undefined;
   }
 
-  return createView<R, VT, CT>(context, resolved);
+  return createView<VT, CT>(context, resolved) as ComponentCtor;
 }
 
-function createTableView<R, VT, CT>(
-  context: UncertainContext<R, ListViewContext<R, VT, CT>>,
-  options?: PartialOptions<ListViewContextDescriptor<CT>>,
-): VueConstructor {
-  return resolveView<R, VT, CT>('list', 'TableView', context, options);
+function createTableView<VT, CT>(
+  context: UncertainContext<ListViewContext<VT, CT>>,
+  options?: PartialOptions<ListViewContextDescriptor<VT, CT>>,
+): ComponentCtor {
+  return resolveView<VT, CT>(context, 'list', 'TableView', options);
 }
 
-function createDetailView<R, VT, CT>(
-  context: UncertainContext<R, ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<ObjectViewContextDescriptor<CT>>,
-): VueConstructor {
-  return resolveView<R, VT, CT>('object', 'DetailView', context, options);
+function createTableViewGetter<VT, CT>(
+  context: UncertainContext<ListViewContext<VT, CT>>,
+  options?: PartialOptions<ListViewContextDescriptor<VT, CT>>,
+): ViewGetter {
+  return () => createTableView(context, options);
 }
 
-function createFormView<R, VT, CT>(
-  context: UncertainContext<R, ObjectViewContext<R, VT, CT>>,
-  options?: PartialOptions<ObjectViewContextDescriptor<CT>>,
-): VueConstructor {
-  return resolveView<R, VT, CT>('object', 'FormView', context, options);
+function createDetailView<VT, CT>(
+  context: UncertainContext<ObjectViewContext<VT, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
+): ComponentCtor {
+  return resolveView<VT, CT>(context, 'object', 'DetailView', options);
 }
 
-export { createTableView, createDetailView, createFormView };
+function createDetailViewGetter<VT, CT>(
+  context: UncertainContext<ObjectViewContext<VT, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
+): ViewGetter {
+  return () => createDetailView(context, options);
+}
+
+function createFormView<VT, CT>(
+  context: UncertainContext<ObjectViewContext<VT, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
+): ComponentCtor {
+  return resolveView<VT, CT>(context, 'object', 'FormView', options);
+}
+
+function createFormViewGetter<VT, CT>(
+  context: UncertainContext<ObjectViewContext<VT, CT>>,
+  options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
+): ViewGetter {
+  return () => createFormView(context, options);
+}
+
+export {
+  createTableView,
+  createTableViewGetter,
+  createDetailView,
+  createDetailViewGetter,
+  createFormView,
+  createFormViewGetter,
+};
