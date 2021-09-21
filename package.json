@@ -20,7 +20,6 @@
     "eslint": "^7.21.0",
     "fibers": "^5.0.0",
     "handie-vue": "0.0.31",
-    "kokiri": "0.0.1",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "mocker-api": "^2.9.0",
