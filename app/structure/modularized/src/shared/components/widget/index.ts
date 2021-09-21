@@ -1,1 +1,1 @@
-export * from './view';
+export * from 'handie-vue/dist/widgets';

@@ -16,6 +16,6 @@ export default {
     widgets: { test: TestWidget },
   },
   components: {
-    OlButton: 'Button',
+    XButton: 'Button',
   },
 } as ModuleDescriptor;

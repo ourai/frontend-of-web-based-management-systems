@@ -9,7 +9,7 @@ export default createTableViewGetter(context, {
   getList: 'getList',
   config: { operationColumnWidth: 250 },
   fields: [
-    { name: 'title', label: '标题', render: TitleField, config: { width: '300' } },
+    { name: 'title', label: '标题', widget: TitleField, config: { width: '300' } },
     { name: 'description', label: '简介' },
   ],
   actions: [

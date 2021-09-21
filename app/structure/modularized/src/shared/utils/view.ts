@@ -3,7 +3,7 @@ import { createView } from 'handie-vue';
 import {
   ComponentCtor,
   ModuleContext,
-  GenericRenderer,
+  ComponentRenderer,
   ViewCategory,
   ListViewContextDescriptor,
   ObjectViewContextDescriptor,
@@ -19,8 +19,8 @@ type UnionViewContextDescriptor<VT, CT> =
   | ListViewContextDescriptor<VT, CT>
   | ObjectViewContextDescriptor<VT, CT>;
 
-type PartialOptions<OT> = Omit<OT, 'type' | 'render'> & {
-  render?: GenericRenderer;
+type PartialOptions<OT> = Omit<OT, 'type' | 'widget'> & {
+  widget?: ComponentRenderer;
 };
 
 function resolveView<VT, CT>(
@@ -32,7 +32,7 @@ function resolveView<VT, CT>(
   let resolved: UnionViewContextDescriptor<VT, CT> | undefined;
 
   if (options) {
-    resolved = { render: defaultRenderer, ...options, category };
+    resolved = { widget: defaultRenderer, ...options, category };
   } else {
     resolved = undefined;
   }
@@ -44,7 +44,7 @@ function createTableView<VT, CT>(
   context: UncertainContext<ListViewContext<VT, CT>>,
   options?: PartialOptions<ListViewContextDescriptor<VT, CT>>,
 ): ComponentCtor {
-  return resolveView<VT, CT>(context, 'list', 'TableView', options);
+  return resolveView<VT, CT>(context, 'list', 'TableViewWidget', options);
 }
 
 function createTableViewGetter<VT, CT>(
@@ -58,7 +58,7 @@ function createDetailView<VT, CT>(
   context: UncertainContext<ObjectViewContext<VT, CT>>,
   options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
 ): ComponentCtor {
-  return resolveView<VT, CT>(context, 'object', 'DetailView', options);
+  return resolveView<VT, CT>(context, 'object', 'DetailViewWidget', options);
 }
 
 function createDetailViewGetter<VT, CT>(
@@ -72,7 +72,7 @@ function createFormView<VT, CT>(
   context: UncertainContext<ObjectViewContext<VT, CT>>,
   options?: PartialOptions<ObjectViewContextDescriptor<VT, CT>>,
 ): ComponentCtor {
-  return resolveView<VT, CT>(context, 'object', 'FormView', options);
+  return resolveView<VT, CT>(context, 'object', 'FormViewWidget', options);
 }
 
 function createFormViewGetter<VT, CT>(

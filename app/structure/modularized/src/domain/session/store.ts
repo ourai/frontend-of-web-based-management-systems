@@ -43,7 +43,7 @@ function getAccessibleAuthority(
     (permissions as string[]).forEach(permission => (accessible[permission] = true));
   } else {
     Object.keys(permissions).forEach(key => {
-      accessible = { [key]: true, ...getAccessibleAuthority(permissions[key]) };
+      accessible = { ...accessible, [key]: true, ...getAccessibleAuthority(permissions[key]) };
     });
   }
 

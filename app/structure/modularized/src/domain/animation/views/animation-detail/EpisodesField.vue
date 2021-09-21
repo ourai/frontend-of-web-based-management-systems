@@ -10,10 +10,10 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 
-import { RelationFieldWidget } from '@/components/widget/base';
+import { RelationFieldHeadlessWidget } from '@/components/widget/headless';
 
 @Component
-export default class AnimationDetailEpisodesField extends RelationFieldWidget<string[]> {}
+export default class AnimationDetailEpisodesField extends RelationFieldHeadlessWidget<string[]> {}
 </script>
 
 <style lang="scss" scoped>

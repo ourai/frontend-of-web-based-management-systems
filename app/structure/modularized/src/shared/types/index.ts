@@ -1,5 +1,7 @@
 export {
+  ThemeOptions,
   ComponentCtor,
+  ComponentType,
   ComponentDescriptor,
   ValidationResult,
   ObjectValue,
@@ -22,12 +24,10 @@ export {
   ObjectViewContext,
   RouteConfig,
   RouteRecord,
-  GenericRenderer,
+  ComponentRenderer,
   TableColumn,
   ColumnContext,
-  CellRenderer,
-  FieldRenderer,
-  BuiltInActionRenderer,
-  ActionRenderer,
+  CellComponentRenderer,
+  FieldComponentRenderer,
   TableViewConfig,
 } from 'handie-vue';

@@ -1,0 +1,21 @@
+.TabBarDemo {
+  &-content {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      content: "\0020";
+      border-bottom: 1px solid #f0f0f0;
+    }
+  }
+
+  &-nav {
+    border-top-width: 0 !important;
+    border-right-width: 0 !important;
+    border-left-width: 0 !important;
+  }
+}

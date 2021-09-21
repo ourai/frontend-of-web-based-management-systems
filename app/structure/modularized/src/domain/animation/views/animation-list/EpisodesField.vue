@@ -1,17 +1,20 @@
 <template>
-  <span>{{ value.length }}</span>
+  <span>{{ count }}</span>
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
-import { TableFieldWidget } from '@/components/widget/base';
+import { RelationFieldHeadlessWidget } from '@/components/widget/headless';
 
 import { AnimationEntity } from '../../typing';
 
 @Component
-export default class AnimationListEpisodesField extends TableFieldWidget<AnimationEntity> {
-  @Prop({ type: Array, default: () => [] })
-  private readonly value!: string[];
+export default class AnimationListEpisodesField extends RelationFieldHeadlessWidget<
+  AnimationEntity[]
+> {
+  private get count() {
+    return (this.value || []).length;
+  }
 }
 </script>

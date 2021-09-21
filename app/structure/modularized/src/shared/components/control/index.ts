@@ -1,9 +1,12 @@
-import Vue from 'vue';
-import { Loading } from 'element-ui';
-
-import Button from './button';
-import DataTable from './data-table';
-
-Vue.use(Loading);
-
-export { Button, DataTable };
+export * from 'handie-vue/dist/controls';
+export {
+  Input,
+  Select,
+  Option,
+  OptionGroup,
+  Radio,
+  RadioGroup,
+  Form,
+  FormItem,
+  Tooltip,
+} from 'element-ui';

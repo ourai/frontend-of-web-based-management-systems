@@ -3,15 +3,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
-import { TableFieldWidget } from '@/components/widget/base';
-
-import { GameEntity } from '../../typing';
+import { StringFieldHeadlessWidget } from '@/components/widget/headless';
 
 @Component
-export default class GameListTitleField extends TableFieldWidget<GameEntity> {
-  @Prop({ type: String, default: '' })
-  private readonly value!: string;
+export default class GameListTitleField extends StringFieldHeadlessWidget {
+  private get row() {
+    return this.context.getValue();
+  }
 }
 </script>

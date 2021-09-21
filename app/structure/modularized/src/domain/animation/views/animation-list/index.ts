@@ -6,15 +6,15 @@ import EpisodesField from './EpisodesField.vue';
 export default {
   name: 'AnimationListView',
   type: 'list',
-  render: 'TableView',
+  renderType: 'table',
   config: { operationColumnWidth: 250 },
   fields: [
-    { name: 'title', render: TitleField, config: { width: '300' } },
+    { name: 'title', widget: TitleField, config: { width: '300' } },
     'description',
     {
       name: 'episodes',
       label: '集数',
-      render: EpisodesField,
+      widget: EpisodesField,
       config: { width: '60', align: 'center' },
     },
   ],
@@ -27,6 +27,6 @@ export default {
     { name: 'deleteOne', authority: 'animation:edit' },
   ],
   search: {
-    filters: ['title', 'description'],
+    filters: ['title', 'form', 'description'],
   },
 } as ViewDescriptor;

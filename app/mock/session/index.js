@@ -6,6 +6,7 @@ module.exports = {
     nickname: '欧雷',
     permissions: {
       otaku: ['animation:read', 'animation:edit', 'comic:read', 'game:read'],
+      spreadsheet: ['spreadsheet:edit'],
     },
   }),
 };
