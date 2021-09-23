@@ -1,1 +1,1 @@
-export * from 'handie-vue/dist/widgets/headless';
+export * from 'handie-vue/dist/widgets';

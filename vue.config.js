@@ -16,6 +16,10 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve(`${APP_SRC}/shared`),
+        'handie-vue/dist': resolve('./external/handie-vue/src'),
+        'handie-vue': resolve('./external/handie-vue/src/index.ts'),
+        '@handie/bulbasaur/dist': resolve('./external/bulbasaur/src'),
+        '@handie/bulbasaur': resolve('./external/bulbasaur/src/index.ts'),
       },
     },
   },

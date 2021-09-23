@@ -6,4 +6,7 @@ node_modules/
 .asset-cache/
 .sass-cache/
 
+.gitmodules
+
+external/
 _site/

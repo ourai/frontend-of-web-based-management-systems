@@ -14,8 +14,13 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["app/structure/modularized/src/shared/*"]
+      "@/*": ["app/structure/modularized/src/shared/*"],
+      "handie-vue": ["external/handie-vue/src/index.ts"],
+      "handie-vue/dist/*": ["external/handie-vue/src/*"],
+      "@handie/bulbasaur": ["external/bulbasaur/src/index.ts"],
+      "@handie/bulbasaur/dist/*": ["external/bulbasaur/src/*"],
     }
   },
-  "include": ["app/structure/modularized/src"]
+  "exclude": ["node_modules"],
+  "include": ["app/structure/modularized/src", "external"]
 }

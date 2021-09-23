@@ -10,6 +10,7 @@
   "author": "Ourai Lin <ourairyu@gmail.com> (https://ourai.ws/)",
   "license": "MIT",
   "devDependencies": {
+    "@handie/bulbasaur": "0.0.0",
     "@ntks/eslint-config": "0.0.0",
     "@ntks/stylelint-config": "0.0.5",
     "@vue/cli-plugin-typescript": "^4.5.9",
@@ -19,7 +20,7 @@
     "element-ui": "^2.14.1",
     "eslint": "^7.21.0",
     "fibers": "^5.0.0",
-    "handie-vue": "0.0.31",
+    "handie-vue": "0.0.32",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "mocker-api": "^2.9.0",

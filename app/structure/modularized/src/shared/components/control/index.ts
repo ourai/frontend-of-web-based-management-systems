@@ -1,4 +1,4 @@
-export * from 'handie-vue/dist/controls';
+export * from '@handie/bulbasaur/dist/controls';
 export {
   Input,
   Select,

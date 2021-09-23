@@ -1,1 +1,1 @@
-export * from 'handie-vue/dist/widgets';
+export * from '@handie/bulbasaur/dist/widgets';
