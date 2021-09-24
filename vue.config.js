@@ -16,6 +16,9 @@ module.exports = {
     resolve: {
       alias: {
         '@': resolve(`${APP_SRC}/shared`),
+        'petals-ui/dist': resolve('./external/petals-ui/packages/petals/src'),
+        '@petals/view-ui/dist': resolve('./external/view-ui/src'),
+        '@petals/view-ui': resolve('./external/view-ui/src/index.ts'),
         'handie-vue/dist': resolve('./external/handie-vue/src'),
         'handie-vue': resolve('./external/handie-vue/src/index.ts'),
         '@handie/bulbasaur/dist': resolve('./external/bulbasaur/src'),

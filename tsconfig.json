@@ -15,10 +15,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/structure/modularized/src/shared/*"],
+      "petals-ui/dist/*": ["external/petals-ui/packages/petals/src/*"],
+      "@petals/view-ui": ["external/view-ui/src/index.ts"],
+      "@petals/view-ui/dist/*": ["external/view-ui/src/*"],
       "handie-vue": ["external/handie-vue/src/index.ts"],
       "handie-vue/dist/*": ["external/handie-vue/src/*"],
       "@handie/bulbasaur": ["external/bulbasaur/src/index.ts"],
-      "@handie/bulbasaur/dist/*": ["external/bulbasaur/src/*"],
+      "@handie/bulbasaur/dist/*": ["external/bulbasaur/src/*"]
     }
   },
   "exclude": ["node_modules"],
