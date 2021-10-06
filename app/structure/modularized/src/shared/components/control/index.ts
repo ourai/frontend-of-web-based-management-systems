@@ -1,4 +1,4 @@
-// export * from '@handie/bulbasaur/dist/controls';
-export * from '@kokiri/view-ui';
-
-export { Input } from 'element-ui';
+// export * from 'kokiri';
+export { App } from 'kokiri';
+export * from '@kokiri/element';
+// export * from '@kokiri/view-ui';

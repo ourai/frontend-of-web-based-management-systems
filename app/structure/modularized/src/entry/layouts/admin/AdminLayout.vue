@@ -1,7 +1,7 @@
 <template>
   <app-container class="AdminLayout">
     <layout-container>
-      <layout-aside class="AdminLayout-sidebar">
+      <layout-aside class="AdminLayout-sidebar" width="208px">
         <router-link class="AdminLayout-brand" :to="{ name: 'root' }">中后台前端应用</router-link>
         <ul class="AdminLayout-menu">
           <li
@@ -14,7 +14,7 @@
         </ul>
       </layout-aside>
       <layout-container>
-        <layout-header>
+        <layout-header height="48px">
           <nav class="AdminLayout-mainNav">
             <ul class="MainNav">
               <li
