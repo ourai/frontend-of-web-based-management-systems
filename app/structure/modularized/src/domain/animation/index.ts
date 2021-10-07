@@ -17,5 +17,6 @@ export default {
   },
   components: {
     XButton: 'Button',
+    Tree: true,
   },
 } as ModuleDescriptor;

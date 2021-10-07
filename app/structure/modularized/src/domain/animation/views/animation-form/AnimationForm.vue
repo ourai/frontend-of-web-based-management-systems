@@ -7,6 +7,18 @@
       :config="config"
       @change="onFieldValueChange"
     />
+    <tree
+      :data-source="treeData"
+      :value="checkedNodes"
+      :expanded-keys="expandedNodes"
+      :selected-keys="selectedNodes"
+      :node-field="{ key: 'id', label: 'name', children: 'subList' }"
+      :node-renderer="renderTreeNode"
+      checkable
+      @change="handleTreeChange"
+      @select="handleTreeSelect"
+      @expand="handleTreeExpand"
+    />
     <x-button color="primary" @click.prevent="context.submit()">保存</x-button>
   </div>
 </template>
@@ -23,8 +35,45 @@ import { getComponents } from '../../context';
   components: getComponents({ FormRenderer }),
 })
 export default class AnimationForm extends ObjectViewHeadlessWidget {
+  private readonly treeData: any[] = [
+    {
+      id: 1,
+      name: '节点 1',
+      subList: [
+        { id: 2, name: '节点 1-1' },
+        { id: 3, name: '节点 1-2' },
+      ],
+    },
+  ];
+
+  private checkedNodes = [3];
+
+  private expandedNodes = [this.treeData[0].id];
+
+  private selectedNodes = [2];
+
   private get id() {
     return this.$route.params.id || '';
+  }
+
+  private handleTreeChange(checkedKeys): void {
+    console.log('checked keys', checkedKeys);
+    this.checkedNodes = checkedKeys;
+  }
+
+  private handleTreeSelect(selectedKeys): void {
+    console.log('selected keys', selectedKeys);
+    this.selectedNodes = selectedKeys;
+  }
+
+  private handleTreeExpand(expandedKeys): void {
+    console.log('expanded keys', expandedKeys);
+    this.expandedNodes = expandedKeys;
+  }
+
+  private renderTreeNode(data) {
+    console.log(data);
+    return this.$createElement('span', `${data.name} (key-${data.id})`);
   }
 
   protected created(): void {
