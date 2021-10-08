@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <wait :busy="loading">
     <form-renderer
       :fields="fields"
       :value="value"
@@ -20,7 +20,7 @@
       @expand="handleTreeExpand"
     />
     <x-button color="primary" @click.prevent="context.submit()">保存</x-button>
-  </div>
+  </wait>
 </template>
 
 <script lang="ts">
