@@ -19,5 +19,6 @@ export default {
     XButton: 'Button',
     SearchableTree: true,
     Wait: true,
+    Popover: true,
   },
 } as ModuleDescriptor;

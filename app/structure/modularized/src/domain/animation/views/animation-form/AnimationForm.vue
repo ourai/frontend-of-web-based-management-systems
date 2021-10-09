@@ -7,23 +7,29 @@
       :config="config"
       @change="onFieldValueChange"
     />
-    <searchable-tree
-      :data-source="treeData"
-      :value="checkedNodes"
-      :expanded-keys="expandedNodes"
-      :selected-keys="selectedNodes"
-      :node-field="{ key: 'id', label: 'name', children: 'subList' }"
-      :node-renderer="renderTreeNode"
-      :filter="filterTreeNode"
-      placeholder="请输入关键字"
-      empty-text="饿爆了！快喂我"
-      checkable
-      expanded
-      @change="handleTreeChange"
-      @select="handleTreeSelect"
-      @expand="handleTreeExpand"
-    />
     <x-button color="primary" @click.prevent="context.submit()">保存</x-button>
+    <popover trigger="click" :visible="popoverVisible" @visible-change="popoverVisible = $event">
+      <div slot="content">
+        <searchable-tree
+          :data-source="treeData"
+          :value="checkedNodes"
+          :expanded-keys="expandedNodes"
+          :selected-keys="selectedNodes"
+          :node-field="{ key: 'id', label: 'name', children: 'subList' }"
+          :node-renderer="renderTreeNode"
+          :filter="filterTreeNode"
+          placeholder="请输入关键字"
+          empty-text="饿爆了！快喂我"
+          checkable
+          expanded
+          @change="handleTreeChange"
+          @select="handleTreeSelect"
+          @expand="handleTreeExpand"
+        />
+        <x-button @click="popoverVisible = false">关闭搜索树</x-button>
+      </div>
+      <x-button>查看搜索树</x-button>
+    </popover>
   </wait>
 </template>
 
@@ -39,6 +45,8 @@ import { getComponents } from '../../context';
   components: getComponents({ FormRenderer }),
 })
 export default class AnimationForm extends ObjectViewHeadlessWidget {
+  private readonly popoverVisible: boolean = false;
+
   private readonly treeData: any[] = [
     {
       id: 1,
@@ -73,22 +81,19 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
   }
 
   private handleTreeChange(checkedKeys): void {
-    console.log('checked keys', checkedKeys);
     this.checkedNodes = checkedKeys;
   }
 
   private handleTreeSelect(selectedKeys): void {
-    console.log('selected keys', selectedKeys);
     this.selectedNodes = selectedKeys;
   }
 
   private handleTreeExpand(expandedKeys): void {
-    console.log('expanded keys', expandedKeys);
     this.expandedNodes = expandedKeys;
   }
 
-  private renderTreeNode(data) {
-    return this.$createElement('span', `${data.name} (key-${data.id})`);
+  private renderTreeNode(data, node) {
+    return this.$createElement('span', `${data.name} (key-${data.id}) (level-${node.level})`);
   }
 
   protected created(): void {
