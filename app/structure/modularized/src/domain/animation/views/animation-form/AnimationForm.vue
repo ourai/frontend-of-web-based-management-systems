@@ -7,14 +7,18 @@
       :config="config"
       @change="onFieldValueChange"
     />
-    <tree
+    <searchable-tree
       :data-source="treeData"
       :value="checkedNodes"
       :expanded-keys="expandedNodes"
       :selected-keys="selectedNodes"
       :node-field="{ key: 'id', label: 'name', children: 'subList' }"
       :node-renderer="renderTreeNode"
+      :filter="filterTreeNode"
+      placeholder="请输入关键字"
+      empty-text="饿爆了！快喂我"
       checkable
+      expanded
       @change="handleTreeChange"
       @select="handleTreeSelect"
       @expand="handleTreeExpand"
@@ -44,6 +48,14 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
         { id: 3, name: '节点 1-2' },
       ],
     },
+    {
+      id: 4,
+      name: '节点 2',
+      subList: [
+        { id: 5, name: '节点 2-1' },
+        { id: 6, name: '节点 2-2' },
+      ],
+    },
   ];
 
   private checkedNodes = [3];
@@ -54,6 +66,10 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
 
   private get id() {
     return this.$route.params.id || '';
+  }
+
+  private filterTreeNode(keyword, data): boolean {
+    return data.name.indexOf(keyword) > -1;
   }
 
   private handleTreeChange(checkedKeys): void {
@@ -72,7 +88,6 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
   }
 
   private renderTreeNode(data) {
-    console.log(data);
     return this.$createElement('span', `${data.name} (key-${data.id})`);
   }
 
