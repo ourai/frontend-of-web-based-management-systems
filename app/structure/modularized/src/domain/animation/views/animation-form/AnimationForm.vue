@@ -30,6 +30,8 @@
       </div>
       <x-button>查看搜索树</x-button>
     </popover>
+    <x-button @click="handleAlert">提示对话框</x-button>
+    <x-button @click="handleConfirm">确认对话框</x-button>
   </wait>
 </template>
 
@@ -94,6 +96,22 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
 
   private renderTreeNode(data, node) {
     return this.$createElement('span', `${data.name} (key-${data.id}) (level-${node.level})`);
+  }
+
+  private handleAlert(): void {
+    (getComponents().XDialog as any).alert(
+      '<span style="color: #f00;">Good</span> Job!!!',
+      'Damn it!',
+    );
+  }
+
+  private handleConfirm(): void {
+    (getComponents().XDialog as any).confirm(
+      '<p>想看第二个<br>弹窗吗？</p>',
+      () => alert('Good!'),
+      () => alert('oh no'),
+      { type: 'warning', closable: true },
+    );
   }
 
   protected created(): void {

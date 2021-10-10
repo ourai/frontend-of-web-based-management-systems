@@ -17,6 +17,7 @@ export default {
   },
   components: {
     XButton: 'Button',
+    XDialog: 'Dialog',
     SearchableTree: true,
     Wait: true,
     Popover: true,
