@@ -106,10 +106,12 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
   }
 
   private handleConfirm(): void {
-    (getComponents().XDialog as any).confirm(
+    const { XDialog, Message } = getComponents();
+
+    (XDialog as any).confirm(
       '<p>想看第二个<br>弹窗吗？</p>',
-      () => alert('Good!'),
-      () => alert('oh no'),
+      () => (Message as any).show('Good!', 1, { type: 'success' }),
+      () => (Message as any).show('oh no', () => alert('God!'), { type: 'error' }),
       { type: 'warning', closable: true },
     );
   }
