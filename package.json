@@ -22,7 +22,7 @@
     "element-ui": "^2.14.1",
     "eslint": "^7.21.0",
     "fibers": "^5.0.0",
-    "handie-vue": "0.0.42",
+    "handie-vue": "0.0.43",
     "kokiri": "0.0.2",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
