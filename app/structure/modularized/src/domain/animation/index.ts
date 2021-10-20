@@ -22,5 +22,6 @@ export default {
     SearchableTree: true,
     Wait: true,
     Popover: true,
+    Ellipsis: true,
   },
 } as ModuleDescriptor;
