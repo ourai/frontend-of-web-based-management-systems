@@ -1,5 +1,6 @@
 <template>
   <wait :busy="loading">
+    <empty />
     <form-renderer
       :fields="fields"
       :value="value"
@@ -102,6 +103,7 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
     (getComponents().XDialog as any).alert(
       '<span style="color: #f00;">Good</span> Job!!!',
       'Damn it!',
+      { centered: true },
     );
   }
 

@@ -23,5 +23,6 @@ export default {
     Wait: true,
     Popover: true,
     Ellipsis: true,
+    Empty: true,
   },
 } as ModuleDescriptor;
