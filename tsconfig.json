@@ -30,5 +30,5 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["app/structure/modularized/src", "external"]
+  "include": ["app/structure/modularized/src"/*, "external"*/]
 }
