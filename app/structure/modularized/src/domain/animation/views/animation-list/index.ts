@@ -6,7 +6,7 @@ import PopoverButtonAction from './PopoverButtonAction.vue';
 
 export default {
   name: 'AnimationListView',
-  type: 'list',
+  category: 'list',
   renderType: 'table',
   config: { operationColumnWidth: 250 },
   fields: [

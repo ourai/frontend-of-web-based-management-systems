@@ -15,7 +15,7 @@ export default [
     execute: (context: ObjectViewContext, vm) =>
       vm.$router.push({
         name: `${context.getModuleContext().getModuleName()}EditForm`,
-        params: { id: context.getValue().id },
+        params: { id: context.getFieldValue('id') },
       }),
   },
   {
@@ -25,7 +25,7 @@ export default [
     execute: (context: ObjectViewContext, vm) =>
       vm.$router.push({
         name: `${context.getModuleContext().getModuleName()}Detail`,
-        params: { id: context.getValue().id },
+        params: { id: context.getFieldValue('id') },
       }),
   },
   {
