@@ -22,7 +22,7 @@ export default {
   actions: [
     { name: 'gotoCreateFormView', authority: 'animation:edit', primary: true },
     { name: 'deleteList', authority: 'animation:edit' },
-    { text: '选择一条以上出现气泡提示', context: 'free', widget: PopoverButtonAction },
+    { text: '选择一条以上出现气泡提示', context: 'batch', widget: PopoverButtonAction },
     { text: '选择一条及以上', context: 'both' },
     'gotoDetailView',
     { name: 'gotoEditFormView', authority: 'animation:edit' },
