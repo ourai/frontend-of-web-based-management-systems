@@ -14,7 +14,8 @@
 import { Component } from 'vue-property-decorator';
 
 import { ActionHeadlessWidget } from '@/components/widget/headless';
-import { getComponents } from '../../context';
+
+import { getComponents } from '../../helper';
 
 @Component({
   components: getComponents(),

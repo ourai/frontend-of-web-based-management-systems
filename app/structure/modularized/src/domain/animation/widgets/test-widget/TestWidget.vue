@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { getComponents } from '../../context';
+import { getComponents } from '../../helper';
 
 @Component({
   components: getComponents(),

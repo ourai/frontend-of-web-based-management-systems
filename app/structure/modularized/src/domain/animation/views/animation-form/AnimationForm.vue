@@ -42,7 +42,7 @@ import { Component } from 'vue-property-decorator';
 import { ObjectViewHeadlessWidget } from '@/components/widget/headless';
 import { FormRenderer } from '@/components/renderer';
 
-import { getComponents } from '../../context';
+import { getComponents } from '../../helper';
 
 @Component({
   components: getComponents({ FormRenderer }),
