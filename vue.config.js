@@ -5,7 +5,7 @@ function resolve(dir) {
   return joinPath(__dirname, dir);
 }
 
-const APP_SRC = './app/structure/modularized/src';
+const APP_SRC = './app/client/vue/src';
 
 module.exports = {
   publicPath: '/',

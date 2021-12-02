@@ -14,7 +14,7 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["app/structure/modularized/src/shared/*"],
+      "@/*": ["app/client/vue/src/shared/*"],
       // "petals-ui/dist/*": ["external/petals-ui/packages/petals/src/*"],
       // "@kokiri/core/dist/*": ["external/kokiri/packages/core/src/*"],
       // "kokiri": ["external/kokiri/packages/kokiri/src/index.ts"],
@@ -30,5 +30,5 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["app/structure/modularized/src"/*, "external"*/]
+  "include": ["app/client/vue/src"/*, "external"*/]
 }
