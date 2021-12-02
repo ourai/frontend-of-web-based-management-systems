@@ -5,7 +5,7 @@ function resolve(dir) {
   return joinPath(__dirname, dir);
 }
 
-const APP_SRC = './app/client/vue/src';
+const APP_SRC = './src';
 
 module.exports = {
   publicPath: '/',
@@ -33,7 +33,7 @@ module.exports = {
   },
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      args[0].template = resolve('./app/public/index.html');
+      args[0].template = resolve('./public/index.html');
 
       return args;
     });
@@ -51,6 +51,6 @@ module.exports = {
   },
   devServer: {
     disableHostCheck: true,
-    before: app => mock(app, resolvePath('./app/mock/index.js')),
+    before: app => mock(app, resolvePath('../../mock/index.js')),
   },
 };

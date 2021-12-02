@@ -1,0 +1,23 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/shared/*"],
+      // "petals-ui/dist/*": ["external/petals-ui/packages/petals/src/*"],
+      // "@kokiri/core/dist/*": ["external/kokiri/packages/core/src/*"],
+      // "kokiri": ["external/kokiri/packages/kokiri/src/index.ts"],
+      // "kokiri/dist/*": ["external/kokiri/packages/kokiri/src/*"],
+      // "@kokiri/element": ["external/kokiri/packages/element/src/index.ts"],
+      // "@kokiri/element/dist/*": ["external/kokiri/packages/element/src/*"],
+      // "@kokiri/view-ui": ["external/kokiri/packages/view-ui/src/index.ts"],
+      // "@kokiri/view-ui/dist/*": ["external/kokiri/packages/view-ui/src/*"],
+      // "handie-vue": ["external/handie-vue/src/index.ts"],
+      // "handie-vue/dist/*": ["external/handie-vue/src/*"],
+      // "@handie/bulbasaur": ["external/bulbasaur/src/index.ts"],
+      // "@handie/bulbasaur/dist/*": ["external/bulbasaur/src/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["src"/*, "external"*/]
+}
