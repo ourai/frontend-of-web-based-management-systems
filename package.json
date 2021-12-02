@@ -5,8 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "vue:start": "cd app/client/vue && npm start",
-    "start": "npm run vue:start"
+    "vue-app": "cd app/client/vue && npm start",
+    "react-app": "cd app/client/react && npm start",
+    "start": "npm run vue-app"
   },
   "author": "Ourai Lin <ourairyu@gmail.com> (https://ourai.ws/)",
   "license": "MIT",

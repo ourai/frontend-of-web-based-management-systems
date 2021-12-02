@@ -5,6 +5,7 @@ node_modules/
 .cache/
 .asset-cache/
 .sass-cache/
+.umi/
 
 .gitmodules
 
