@@ -1,5 +1,5 @@
 {
-  "name": "@ourai/vue-frontend-of-web-based-management-systems",
+  "name": "@ourai/vue-app",
   "version": "0.0.0",
   "description": "Examples for front-end of web-based management systems",
   "private": true,
@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@handie/bulbasaur": "0.0.10",
+    "@handie/runtime-core": "0.0.0",
     "@kokiri/element": "0.0.10",
     "@kokiri/view-ui": "0.0.16",
     "@ntks/eslint-config": "0.0.0",

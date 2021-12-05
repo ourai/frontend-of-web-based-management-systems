@@ -9,7 +9,11 @@
     "strict": true,
     "paths": {
       "@/*": ["src/*"],
-      "@@/*": ["src/.umi/*"]
+      "@@/*": ["src/.umi/*"],
+      "handie-react": ["external/handie-react/src/index.ts"],
+      "handie-react/dist/*": ["external/handie-react/src/*"],
+      "@handie/squirtle": ["external/squirtle/src/index.ts"],
+      "@handie/squirtle/dist/*": ["external/squirtle/src/*"]
     }
   },
   "include": [
@@ -17,7 +21,8 @@
     "src/**/*",
     "config/**/*",
     ".umirc.ts",
-    "typings.d.ts"
+    "typings.d.ts",
+    "external"
   ],
   "exclude": [
     "node_modules",
