@@ -10,6 +10,10 @@
     "paths": {
       "@/*": ["src/*"],
       "@@/*": ["src/.umi/*"],
+      // "petals-ui/dist/*": ["external/petals-ui/packages/petals/src/*"],
+      "@zora/core/dist/*": ["external/zora-core/src/*"],
+      "@zora/adapter-ant-design": ["external/zora-antd/src/index.ts"],
+      "@zora/adapter-ant-design/dist/*": ["external/zora-antd/src/*"],
       "handie-react": ["external/handie-react/src/index.ts"],
       "handie-react/dist/*": ["external/handie-react/src/*"],
       "@handie/squirtle": ["external/squirtle/src/index.ts"],
