@@ -119,7 +119,7 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
   }
 
   protected created(): void {
-    const ctx = this.context;
+    const ctx = this.$$view;
 
     this.on({
       fieldChange: ({ name, value }) => console.log(name, value),
@@ -138,11 +138,11 @@ export default class AnimationForm extends ObjectViewHeadlessWidget {
     if (this.id && ctx.getOne) {
       ctx.getOne(this.id, data => {
         this.dataSource = data;
-        this.context.setValue(data);
+        ctx.setValue(data);
       });
     }
 
-    setTimeout(() => this.context.setFieldValue('ghost', 'You can not see me!'), 3000);
+    setTimeout(() => ctx.setFieldValue('ghost', 'You can not see me!'), 3000);
   }
 }
 </script>

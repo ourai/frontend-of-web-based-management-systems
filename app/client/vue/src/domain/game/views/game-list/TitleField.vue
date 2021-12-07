@@ -10,7 +10,7 @@ import { StringFieldHeadlessWidget } from '@/components/widget/headless';
 @Component
 export default class GameListTitleField extends StringFieldHeadlessWidget {
   private get row() {
-    return this.context.getValue();
+    return this.$$view.getValue();
   }
 }
 </script>

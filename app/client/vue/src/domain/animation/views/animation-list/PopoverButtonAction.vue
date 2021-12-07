@@ -32,7 +32,7 @@ export default class PopoverButtonActionWidget extends ActionHeadlessWidget {
   }
 
   protected created(): void {
-    this.context.on('change', selected => (this.popoverVisible = selected.length > 1));
+    this.$$view.on('change', selected => (this.popoverVisible = selected.length > 1));
   }
 }
 </script>
